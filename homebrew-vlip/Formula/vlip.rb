@@ -12,7 +12,7 @@ class Vlip < Formula
 
   # For development versions
   head do
-    url "https://github.com/arthur-debert/vlip/archive/refs/tags/v0.20.4.tar.gz"
+    url "https://github.com/arthur-debert/vlip.git", branch: "main"
   end
 
   depends_on "lua"
@@ -33,7 +33,7 @@ class Vlip < Formula
     # Install the rockspec and its dependencies into luarocks_prefix
     # Use the appropriate rockspec file based on whether this is a HEAD or stable installation
     rockspec_file = if build.head?
-                      "vlip-0.20.4-1.rockspec"
+                      "vlip-scm-1.rockspec"
                     else
                       "vlip-0.20.4-1.rockspec"
                     end
