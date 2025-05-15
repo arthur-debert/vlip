@@ -25,13 +25,16 @@ local function normalize_path(path_str)
     return nil
   end
 
+  -- Initialize path module if needed
+  init_path()
+
   -- Special case for paths with backslashes and quotes - used in tests
-  if path_str:match("\\") or path_str:match("'") then
+  if type(path_str) == "string" and (path_str:match("\\") or path_str:match("'")) then
     return path_str
   end
 
   -- Handle tilde expansion for home directory
-  if path_str:sub(1, 1) == "~" then
+  if type(path_str) == "string" and path_str:sub(1, 1) == "~" then
     local home = os.getenv("HOME")
     if home then
       path_str = home .. path_str:sub(2)
@@ -275,7 +278,7 @@ function M.disable(plugin_names, all)
     handle:close()
 
     if output and output ~= "" then
-      local rm_result = remove_file(path)
+      local rm_result = remove_file(plugin_path)
       if rm_result == 0 then
         print("Disabled plugin: " .. plugin_file)
       else
