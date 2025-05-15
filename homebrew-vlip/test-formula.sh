@@ -21,6 +21,16 @@ echo "\n=== Skipping formula syntax check ==="
 echo "\n=== Uninstalling existing vlip if present ==="
 brew uninstall vlip 2>/dev/null || true
 
+# Also remove any luarocks installations
+echo "\n=== Removing any LuaRocks installations ==="
+if command -v luarocks &> /dev/null; then
+  luarocks remove vlip 2>/dev/null || true
+fi
+
+# Clean up any remaining files
+echo "\n=== Cleaning up any remaining files ==="
+[ -f /opt/homebrew/bin/vlip ] && rm -f /opt/homebrew/bin/vlip
+
 # Test installing from the local formula
 echo "\n=== Testing local installation ==="
 HOMEBREW_NO_INSTALL_CLEANUP=1 brew install --HEAD --build-from-source -v "$TEST_DIR/Formula/vlip.rb" || (echo "Installation failed"; exit 1)

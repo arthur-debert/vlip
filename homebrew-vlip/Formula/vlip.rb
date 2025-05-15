@@ -14,12 +14,21 @@ class Vlip < Formula
   depends_on "lua"
   
   def install
-    system "luarocks", "make", "vlip-scm-1.rockspec", "--tree=#{prefix}"
+    # Create a self-contained package directory for Lua modules
+    luapath = libexec/"lua"
+    ENV["LUA_PATH"] = "#{luapath}/?.lua;;"
     
-    # Ensure the binary is executable
-    chmod 0755, "#{bin}/vlip"
+    # Install dependencies in the isolated directory
+    system "luarocks", "make", "vlip-scm-1.rockspec", "--tree=#{libexec}"
     
-    # Optionally install documentation
+    # Copy the main executable and create a wrapper script
+    bin_file = libexec/"bin/vlip"
+    chmod 0755, bin_file
+    
+    # Create a wrapper script that sets up the correct paths
+    (bin/"vlip").write_env_script bin_file, :LUA_PATH => "#{luapath}/?.lua;#{luapath}/?/init.lua;;"
+    
+    # Install documentation
     doc.install "README.md", "LICENSE"
   end
   
@@ -28,7 +37,21 @@ class Vlip < Formula
     assert_match "vlip version", shell_output("#{bin}/vlip --version")
     
     # Create a simple test environment
-    mkdir_p testpath/"nvim/nvimrc/lua/plugins"
+    test_dir = testpath/"nvim/nvimrc/lua"
+    mkdir_p "#{test_dir}/plugins"
+    mkdir_p "#{test_dir}/plugins-available"
+    
+    # Create a sample plugin file
+    (test_dir/"plugins-available/test-plugin.lua").write <<~EOS
+      return {
+        "test-plugin/plugin",
+        config = function() end
+      }
+    EOS
+    
+    # Test initialization
+    system bin/"vlip", "init"
+    assert_predicate test_dir/"plugins-available", :directory?
     mkdir_p testpath/"nvim/nvimrc/lua/plugins-available"
     
     # Create a dummy plugin file

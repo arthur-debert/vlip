@@ -82,11 +82,22 @@ end
 -- Main entry point for CLI
 function M.run(args)
   -- Skip the first argument (script name) if running from command line
-  if args[0] then
-    table.remove(args, 0)
+  -- Make a copy of the args to avoid modifying the original
+  local args_copy = {}
+  
+  -- Convert numeric indexed args to a new table
+  for i=0, #args do
+    if args[i] ~= nil then
+      table.insert(args_copy, args[i])
+    end
   end
   
-  return M.parse_args(args)
+  -- Skip the first argument if it's the script name
+  if #args_copy > 0 and args_copy[1]:match("vlip$") then
+    table.remove(args_copy, 1)
+  end
+  
+  return M.parse_args(args_copy)
 end
 
 return M
