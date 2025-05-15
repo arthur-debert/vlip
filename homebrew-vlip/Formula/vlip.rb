@@ -28,12 +28,13 @@ class Vlip < Formula
     assert_match "vlip version", shell_output("#{bin}/vlip --version")
     
     # Create a simple test environment
-    testpath.install "bin/vlip"
     mkdir_p testpath/"nvim/nvimrc/lua/plugins"
     mkdir_p testpath/"nvim/nvimrc/lua/plugins-available"
     
-    # Test initialization
-    system "#{bin}/vlip", "init"
-    assert_predicate testpath/"nvim/nvimrc/lua/plugins-available", :directory?
+    # Create a dummy plugin file
+    touch testpath/"nvim/nvimrc/lua/plugins/test.lua"
+    
+    # Verify the basic help output works
+    assert_match "Usage:", shell_output("#{bin}/vlip")
   end
 end

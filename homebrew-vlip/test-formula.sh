@@ -17,9 +17,14 @@ cp /Users/adebert/h/vlip/homebrew-vlip/Formula/vlip.rb "$TEST_DIR/Formula/"
 echo "\n=== Skipping formula syntax check ==="
 # Brew audit doesn't work with direct paths, only installed formulas
 
+# Uninstall vlip first if it exists
+echo "\n=== Uninstalling existing vlip if present ==="
+brew uninstall vlip 2>/dev/null || true
+
 # Test installing from the local formula
 echo "\n=== Testing local installation ==="
 HOMEBREW_NO_INSTALL_CLEANUP=1 brew install --HEAD --build-from-source -v "$TEST_DIR/Formula/vlip.rb" || (echo "Installation failed"; exit 1)
+brew link --overwrite vlip || true
 
 # Verify the installation
 echo "\n=== Verifying installation ==="
