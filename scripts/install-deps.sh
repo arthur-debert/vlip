@@ -5,7 +5,14 @@
 # Fail on errors
 set -e
 
-echo "Installing VLIP development dependencies..."
+echo "Installing VLIP dependencies..."
+
+# Install project dependencies from rockspec
+echo "Installing dependencies from rockspec..."
+luarocks install --only-deps ./vlip-scm-1.rockspec
+
+# Install development dependencies
+echo "Installing development dependencies..."
 
 # Install Busted for testing
 echo "Installing Busted testing framework..."
