@@ -37,12 +37,12 @@ class Vlip < Formula
 
     # Create a wrapper script for the vlip executable
     (bin/"vlip").write_env_script "#{luarocks_prefix}/bin/vlip",
-      LUA_PATH: ENV["LUA_PATH"],
-      LUA_CPATH: ENV["LUA_CPATH"]
+                                  LUA_PATH: ENV["LUA_PATH"],
+                                  LUA_CPATH: ENV["LUA_CPATH"]
   end
 
   test do
     # Test that the vlip executable runs and displays help information
-    assert_match "Usage:", shell_output("#{bin}/vlip --help", 0)
+    assert_match "Usage:", shell_output(bin/"vlip", 1)
   end
 end
