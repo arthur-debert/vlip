@@ -89,6 +89,6 @@ This document outlines test cases that should be added to improve the test cover
 1. ✅ Test with custom config_dir
 2. ✅ Test with custom plugins_dir
 3. ✅ Test with custom available_dir
-4. Test with relative paths for configuration
+4. ✅ Test with relative paths for configuration
 5. ✅ Test with absolute paths for configuration
 6. ✅ Test with non-standard directory structure
