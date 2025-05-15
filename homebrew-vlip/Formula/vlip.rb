@@ -1,13 +1,17 @@
 class Vlip < Formula
   desc "Vim Plugin Flip System"
   homepage "https://github.com/arthur-debert/vlip"
-  url "https://github.com/arthur-debert/vlip/archive/refs/tags/v0.20.4.tar.gz"
-  sha256 "1c60eca00e1807e226b82b89131f3aeee8c3b533a18ae852587c2ca1b554a34b"
-  version "0.20.4"
+  url "https://github.com/arthur-debert/vlip/archive/refs/tags/v0.20.5.tar.gz"
+  sha256 "d5558cd419c8d46bdc958064cb97f963d1ea793866414c025906ec15033512ed"
+  version "0.20.5"
   license "MIT"
 
   head do
     url "https://github.com/arthur-debert/vlip.git", branch: "main"
+  end
+    url "https://github.com/arthur-debert/vlip/archive/refs/tags/v0.20.5.tar.gz"
+  end
+    url "https://github.com/arthur-debert/vlip/archive/refs/tags/v0.20.5.tar.gz"
   end
 
   depends_on "lua"
