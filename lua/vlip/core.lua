@@ -58,7 +58,7 @@ end
 
 -- Function to create a directory if it doesn't exist
 local function mkdir(path)
-  os.execute("mkdir -p " .. path)
+  return os.execute("mkdir -p " .. path)
 end
 
 -- Function to read a file
@@ -81,12 +81,12 @@ end
 
 -- Function to create a symlink
 local function create_symlink(src, dst)
-  os.execute("ln -sf " .. src .. " " .. dst)
+  return os.execute("ln -sf " .. src .. " " .. dst)
 end
 
 -- Function to remove a file
 local function remove_file(path)
-  os.execute("rm " .. path)
+  return os.execute("rm " .. path)
 end
 
 -- Public function to get available plugins
@@ -130,7 +130,11 @@ end
 -- Core functions
 function M.enable(plugin_names, all)
   if not file_exists(available_dir) then
-    mkdir(available_dir)
+    local mkdir_result = mkdir(available_dir)
+    if mkdir_result ~= 0 then
+      print("Error creating plugins-available directory")
+      return false
+    end
   end
   
   if all then
@@ -140,13 +144,18 @@ function M.enable(plugin_names, all)
       local dst = plugins_dir .. "/" .. plugin
       
       if not file_exists(dst) then
-        create_symlink(src, dst)
-        print("Enabled plugin: " .. plugin)
+        local symlink_result = create_symlink(src, dst)
+        if symlink_result == 0 then
+          print("Enabled plugin: " .. plugin)
+        else
+          print("Error enabling plugin: " .. plugin)
+        end
       end
     end
-    return
+    return true
   end
   
+  local success = true
   for _, name in ipairs(plugin_names) do
     local plugin_file = name
     if not name:match("%.lua$") then
@@ -158,15 +167,23 @@ function M.enable(plugin_names, all)
     
     if file_exists(src) then
       if not file_exists(dst) then
-        create_symlink(src, dst)
-        print("Enabled plugin: " .. plugin_file)
+        local symlink_result = create_symlink(src, dst)
+        if symlink_result == 0 then
+          print("Enabled plugin: " .. plugin_file)
+        else
+          print("Error enabling plugin: " .. plugin_file)
+          success = false
+        end
       else
         print("Plugin already enabled: " .. plugin_file)
       end
     else
       print("Plugin not found: " .. plugin_file)
+      success = false
     end
   end
+  
+  return success
 end
 
 function M.disable(plugin_names, all)
@@ -174,19 +191,27 @@ function M.disable(plugin_names, all)
     -- Use ls to get a list of files in the plugins directory
     local handle = io.popen("ls -1 " .. plugins_dir .. "/*.lua 2>/dev/null")
     if handle then
+      local success = true
       for file in handle:lines() do
         local plugin = file:match("([^/]+)$")
         if plugin then
           local path = plugins_dir .. "/" .. plugin
-          os.execute("rm " .. path)
-          print("Disabled plugin: " .. plugin)
+          local rm_result = remove_file(path)
+          if rm_result == 0 then
+            print("Disabled plugin: " .. plugin)
+          else
+            print("Error disabling plugin: " .. plugin)
+            success = false
+          end
         end
       end
       handle:close()
+      return success
     end
-    return
+    return true
   end
   
+  local success = true
   for _, name in ipairs(plugin_names) do
     local plugin_file = name
     if not name:match("%.lua$") then
@@ -200,16 +225,25 @@ function M.disable(plugin_names, all)
     handle:close()
     
     if output and output ~= "" then
-      os.execute("rm " .. path)
-      print("Disabled plugin: " .. plugin_file)
+      local rm_result = remove_file(path)
+      if rm_result == 0 then
+        print("Disabled plugin: " .. plugin_file)
+      else
+        print("Error disabling plugin: " .. plugin_file)
+        success = false
+      end
     else
       print("Plugin not enabled: " .. plugin_file)
+      success = false
     end
   end
+  
+  return success
 end
 
 function M.health_check(fix)
   local issues = 0
+  local fixed_issues = 0
   local enabled = get_enabled_plugins()
   
   for _, plugin in ipairs(enabled) do
@@ -227,29 +261,42 @@ function M.health_check(fix)
       print("Warning: " .. plugin .. " is not a symlink")
       issues = issues + 1
       if fix then
-        remove_file(link_path)
-        print("Removed non-symlink: " .. plugin)
+        local remove_result = remove_file(link_path)
+        if remove_result == 0 then
+          print("Removed non-symlink: " .. plugin)
+          fixed_issues = fixed_issues + 1
+        else
+          print("Error removing non-symlink: " .. plugin)
+        end
       end
     elseif not file_exists(target_path) then
       print("Warning: " .. plugin .. " points to a non-existent file")
       issues = issues + 1
       if fix then
-        remove_file(link_path)
-        print("Removed broken symlink: " .. plugin)
+        local remove_result = remove_file(link_path)
+        if remove_result == 0 then
+          print("Removed broken symlink: " .. plugin)
+          fixed_issues = fixed_issues + 1
+        else
+          print("Error removing broken symlink: " .. plugin)
+        end
       end
     end
   end
   
   if issues == 0 then
     print("Health check passed: All plugin symlinks are valid")
+    return true
   else
     print("Health check found " .. issues .. " issues")
-    if not fix then
+    if fix then
+      print("Fixed " .. fixed_issues .. " out of " .. issues .. " issues")
+      return fixed_issues == issues
+    else
       print("Run with --fix to automatically resolve issues")
+      return false
     end
   end
-  
-  return issues == 0
 end
 
 function M.list_available()
@@ -272,7 +319,11 @@ end
 function M.init()
   if not file_exists(available_dir) then
     print("Creating plugins-available directory...")
-    mkdir(available_dir)
+    local mkdir_result = mkdir(available_dir)
+    if mkdir_result ~= 0 then
+      print("Error creating plugins-available directory")
+      return false
+    end
   end
   
   local plugin_files = get_enabled_plugins()
@@ -282,6 +333,9 @@ function M.init()
   end
   
   print("Found " .. #plugin_files .. " plugin files")
+  
+  -- Track if any operations failed
+  local has_errors = false
   
   -- Move plugin files to plugins-available
   for _, plugin in ipairs(plugin_files) do
@@ -293,24 +347,46 @@ function M.init()
     -- Copy the file to plugins-available
     local content = read_file(src)
     if content then
-      write_file(dst, content)
+      local write_result = write_file(dst, content)
+      if not write_result then
+        print("  Error writing file: " .. dst)
+        has_errors = true
+        goto continue
+      end
       
       -- Remove the original file
-      remove_file(src)
+      local remove_result = remove_file(src)
+      if remove_result ~= 0 then
+        print("  Error removing original file: " .. src)
+        has_errors = true
+        goto continue
+      end
       
       -- Create a symlink from plugins to plugins-available
-      create_symlink(dst, src)
+      local symlink_result = create_symlink(dst, src)
+      if symlink_result ~= 0 then
+        print("  Error creating symlink: " .. src)
+        has_errors = true
+        goto continue
+      end
       
       print("  Created symlink for " .. plugin)
     else
       print("  Error reading file: " .. src)
+      has_errors = true
     end
+    
+    ::continue::
   end
   
-  print("\nInitialization complete!")
-  print("All plugins have been moved to plugins-available and symlinked back to plugins")
-  
-  return true
+  if has_errors then
+    print("\nInitialization completed with errors")
+    return false
+  else
+    print("\nInitialization complete!")
+    print("All plugins have been moved to plugins-available and symlinked back to plugins")
+    return true
+  end
 end
 
 return M
