@@ -1,7 +1,7 @@
 package = "vlip"
 version = "scm-1"
 source = {
-   url = "git://github.com/username/vlip",  -- Replace with your actual repository URL
+   url = "git+https://github.com/adebert/vlip.git",
 }
 description = {
    summary = "Vim Plugin Flip System",
@@ -10,7 +10,7 @@ description = {
       available/enabled pattern, similar to how Nginx and other systems manage
       configurations.
    ]],
-   homepage = "https://github.com/username/vlip",  -- Replace with your actual repository URL
+   homepage = "https://github.com/adebert/vlip",
    license = "MIT"  -- Choose an appropriate license
 }
 dependencies = {

@@ -2,6 +2,9 @@
 
 local M = {}
 
+-- Version information
+M.VERSION = "0.1.0"
+
 -- Import the core module
 local vlip = require("vlip.core")
 
@@ -16,13 +19,17 @@ function M.parse_args(args)
     print("  health-check [--fix]                   - Check for broken symlinks")
     print("  list-available                         - List all available plugins")
     print("  list-enabled                           - List all enabled plugins")
+    print("  --version                              - Show version information")
     return false
   end
   
   local command = args[1]
   table.remove(args, 1)
   
-  if command == "init" then
+  if command == "--version" then
+    print("vlip version " .. M.VERSION)
+    return true
+  elseif command == "init" then
     vlip.init()
   elseif command == "enable" then
     local all = false
