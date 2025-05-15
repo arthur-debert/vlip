@@ -1,11 +1,11 @@
--- Configuration tests for VLIP
--- Run with: busted spec/vlip_configuration_spec.lua
+-- Tests for configuration functionality
+-- Run with: busted spec/core/configuration_spec.lua
 
 -- luacheck: globals io os
 
 local utils = require("spec.utils")
 
-describe("VLIP configuration tests", function()
+describe("configuration tests", function()
     local core
 
     setup(function()
@@ -343,7 +343,8 @@ describe("VLIP configuration tests", function()
         assert.equals(4, #enabled, "Should have 4 enabled plugins")
         assert.is_true(contains(available, "custom-plugin.lua"), "custom-plugin should be available")
         assert.is_true(contains(available, "plugin-with-dashes.lua"), "plugin-with-dashes should be available")
-        assert.is_true(contains(available, "plugin_with_underscores.lua"), "plugin_with_underscores should be available")
+        assert.is_true(contains(available, "plugin_with_underscores.lua"),
+            "plugin_with_underscores should be available")
         assert.is_true(contains(available, "weird!@#$%name.lua"), "weird!@#$%name should be available")
 
         -- Test disabling plugins in this non-standard setup

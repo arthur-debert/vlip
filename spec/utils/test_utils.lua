@@ -1,7 +1,26 @@
 -- Test utilities for VLIP
 local fs_mock = require("spec.utils.fs_mock")
-
 local test_utils = {}
+
+-- Add all possible package paths
+package.path = table.concat({
+  "./?.lua",
+  "./?/init.lua",
+  "./lua/?.lua",
+  "./lua/?/init.lua",
+  "./.luarocks/share/lua/5.1/?.lua",
+  "./.luarocks/share/lua/5.1/?/init.lua",
+  "/home/runner/.luarocks/share/lua/5.1/?.lua",
+  "/home/runner/.luarocks/share/lua/5.1/?/init.lua",
+  package.path
+}, ";")
+
+-- Load required modules
+local mock_path = require("spec.utils.mock_path")
+local core = require("vlip.core")
+
+-- Set mock path module in core for testing
+core._set_path(mock_path)
 
 -- Default configuration
 local default_config = {
@@ -48,12 +67,12 @@ function test_utils.setup_fixture(config)
         name = name .. ".lua"
       end
 
-      local path = cfg.available_dir .. "/" .. name
+      local plugin_path = cfg.available_dir .. "/" .. name
 
       if plugin.is_link then
-        fs_mock.set_symlink(plugin.links_to, path)
+        fs_mock.set_symlink(plugin.links_to, plugin_path)
       else
-        fs_mock.set_file(path, plugin.content or ("-- " .. name))
+        fs_mock.set_file(plugin_path, plugin.content or ("-- " .. name))
       end
     end
   end
@@ -66,18 +85,17 @@ function test_utils.setup_fixture(config)
         name = name .. ".lua"
       end
 
-      local path = cfg.plugins_dir .. "/" .. name
+      local plugin_path = cfg.plugins_dir .. "/" .. name
 
       if plugin.is_link then
-        fs_mock.set_symlink(plugin.links_to, path)
+        fs_mock.set_symlink(plugin.links_to, plugin_path)
       else
-        fs_mock.set_file(path, plugin.content or ("-- " .. name))
+        fs_mock.set_file(plugin_path, plugin.content or ("-- " .. name))
       end
     end
   end
 
   -- Configure VLIP to use our mock paths
-  local core = require("vlip.core")
   core.configure(cfg)
 
   return cfg
