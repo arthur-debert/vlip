@@ -156,7 +156,15 @@ end
 
 ### Multi-Step Workflow Testing
 
-For tests that involve multiple operations in sequence, use the workflow helper:
+The workflow helper is designed for testing complex interactions that require multiple sequential operations. It provides several key benefits:
+
+1. **Clear Step Structure**: Each test step is isolated with its own action and verification, making the test flow easy to understand.
+2. **Robust Error Handling**: If a step fails, you get precise information about which step failed and why.
+3. **Step-by-Step Verification**: Verify the state after each operation rather than only at the end of a complex sequence.
+4. **Enhanced Debugging**: When issues occur, the helper provides clear step-by-step output showing the state between operations.
+5. **Test Reliability**: Using the workflow helper significantly reduces flaky tests by ensuring each step completes successfully before moving to the next.
+
+Example usage:
 
 ```lua
 -- Setup initial test fixture
