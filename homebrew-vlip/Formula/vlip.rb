@@ -3,12 +3,12 @@ class Vlip < Formula
   homepage "https://github.com/adebert/vlip"
   
   head do
-    url "file:///Users/adebert/h/vlip", :using => :git, :branch => "main"
+    url "https://github.com/adebert/vlip.git", :branch => "main"
   end
   
-  # For stable release (uncomment when ready)
-  # url "https://github.com/arthur-debert/vlip/archive/refs/tags/v0.1.0.tar.gz"
-  # sha256 "sha256sum_here"
+  # When you have a stable release, uncomment and update these lines:
+  # url "https://github.com/adebert/vlip/archive/refs/tags/v0.1.0.tar.gz"
+  # sha256 "sha256sum_here" # Run `brew style --fix vlip` to get the SHA
   
   depends_on "luarocks" => :build
   depends_on "lua"

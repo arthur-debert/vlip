@@ -4,6 +4,26 @@ Vlip is a system that allows you to toggle Neovim plugins on and off using a
 Unix-like available/enabled pattern, similar to how Nginx and other systems
 manage configurations.
 
+## Installation
+
+### Using Homebrew
+
+```bash
+# Tap the repository
+brew tap adebert/vlip https://github.com/adebert/vlip.git
+
+# Install vlip
+brew install adebert/vlip/vlip
+```
+
+### Manual Installation
+
+You can also install Vlip using LuaRocks:
+
+```bash
+luarocks install vlip
+```
+
 ## Directory Structure
 
 ```text

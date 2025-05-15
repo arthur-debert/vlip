@@ -31,6 +31,10 @@ fi
 echo "\n=== Cleaning up any remaining files ==="
 [ -f /opt/homebrew/bin/vlip ] && rm -f /opt/homebrew/bin/vlip
 
+# For local testing, we'll modify the formula to use the local repository
+echo "\n=== Updating formula to use local repository ==="
+sed -i '' "s|https://github.com/adebert/vlip.git|file:///Users/adebert/h/vlip|g" "$TEST_DIR/Formula/vlip.rb"
+
 # Test installing from the local formula
 echo "\n=== Testing local installation ==="
 HOMEBREW_NO_INSTALL_CLEANUP=1 brew install --HEAD --build-from-source -v "$TEST_DIR/Formula/vlip.rb" || (echo "Installation failed"; exit 1)

@@ -2,6 +2,8 @@
 
 This repository contains Homebrew formulae for installing Vlip.
 
+The formula creates an isolated environment for Vlip and its dependencies.
+
 ## Installation
 
 ```bash
