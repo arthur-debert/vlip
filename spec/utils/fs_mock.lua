@@ -29,9 +29,7 @@ local function normalize_path(path_str)
   -- Handle . and .. sequences
   local parts = {}
   for part in path_str:gmatch("[^/]+") do
-    if part == "." then
-      -- Skip . parts
-    elseif part == ".." then
+    if part == ".." then
       -- Go up one level if possible
       if #parts > 0 and parts[#parts] ~= ".." then
         table.remove(parts)
@@ -121,7 +119,7 @@ function fs_mock.setup()
   -- Replace io.open
   io.open = function(path, mode)
     path = normalize_path(path)
-    debug_log("io.open called with path: " .. path .. ", mode: " .. mode)
+    debug_log("io.open called with path: " .. path .. ", mode: " .. (mode or "nil"))
     track_operation("io.open", { path = path, mode = mode })
 
     if mode == "r" then
@@ -418,18 +416,13 @@ function fs_mock.dump_operations(num_ops)
   for i = start_idx, #mock_state.operation_log do
     local op = mock_state.operation_log[i]
     if type(op) == "table" then
-      local details_str = ""
-      if type(op.details) == "table" then
-        details_str = "path=" .. (op.details.path or "unknown")
-        if op.details.target then
-          details_str = details_str .. ", target=" .. op.details.target
-        end
-      else
-        details_str = tostring(op.details)
-      end
+      local details = type(op.details) == "table"
+        and ("path=" .. (op.details.path or "unknown") ..
+          (op.details.target and (", target=" .. op.details.target) or ""))
+        or tostring(op.details)
 
       print(string.format("  %d. %s: %s",
-        i, op.type, details_str))
+        i, op.type, details))
     else
       print(string.format("  %d. %s", i, tostring(op)))
     end
