@@ -86,7 +86,7 @@ This document outlines test cases that should be added to improve the test cover
 
 ## Configuration Tests
 
-1. Test with custom config_dir
+1. ✅ Test with custom config_dir
 2. Test with custom plugins_dir
 3. Test with custom available_dir
 4. Test with relative paths for configuration
