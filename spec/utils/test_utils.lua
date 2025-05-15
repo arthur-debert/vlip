@@ -16,11 +16,11 @@ package.path = table.concat({
 }, ";")
 
 -- Load required modules
-local path = require("path")
+local mock_path = require("spec.utils.mock_path")
 local core = require("vlip.core")
 
--- Set path module in core for testing
-core._set_path(path)
+-- Set mock path module in core for testing
+core._set_path(mock_path)
 
 -- Default configuration
 local default_config = {
