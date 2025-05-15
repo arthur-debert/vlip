@@ -1,13 +1,13 @@
 class Vlip < Formula
   desc "Vim Plugin Flip System"
-  homepage "https://github.com/adebert/vlip"
+  homepage "https://github.com/arthur-debert/vlip"
   
   head do
-    url "https://github.com/adebert/vlip.git", :branch => "main"
+    url "file:///Users/arthur-debert/h/vlip", :using => :git, :branch => "main"
   end
   
   # When you have a stable release, uncomment and update these lines:
-  # url "https://github.com/adebert/vlip/archive/refs/tags/v0.1.0.tar.gz"
+  # url "https://github.com/arthur-debert/vlip/archive/refs/tags/v0.1.0.tar.gz"
   # sha256 "sha256sum_here" # Run `brew style --fix vlip` to get the SHA
   
   depends_on "luarocks" => :build

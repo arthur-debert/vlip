@@ -11,7 +11,7 @@ echo "Test directory: $TEST_DIR"
 
 # Copy the formula to the test directory
 mkdir -p "$TEST_DIR/Formula"
-cp /Users/adebert/h/vlip/homebrew-vlip/Formula/vlip.rb "$TEST_DIR/Formula/"
+cp /Users/arthur-debert/h/vlip/homebrew-vlip/Formula/vlip.rb "$TEST_DIR/Formula/"
 
 # Skip formula syntax check as it's not working correctly with paths
 echo "\n=== Skipping formula syntax check ==="
@@ -46,8 +46,8 @@ vlip --version || (echo "vlip --version failed"; exit 1)
 
 # Test tap installation
 echo "\n=== Testing tap installation ==="
-brew tap adebert/vlip file:///Users/adebert/h/vlip/homebrew-vlip || (echo "Tap failed"; exit 1)
-brew untap adebert/vlip || true
+brew tap arthur-debert/vlip file:///Users/arthur-debert/h/vlip/homebrew-vlip || (echo "Tap failed"; exit 1)
+brew untap arthur-debert/vlip || true
 
 # Clean up
 echo "\n=== Cleaning up ==="

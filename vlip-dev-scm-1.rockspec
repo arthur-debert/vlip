@@ -1,14 +1,14 @@
 package = "vlip-dev"
 version = "scm-1"
 source = {
-   url = "git://github.com/username/vlip",  -- Replace with your actual repository URL
+   url = "git://github.com/arthur-debert/vlip",
 }
 description = {
    summary = "Development dependencies for VLIP",
    detailed = [[
       Development dependencies for the Vim Plugin Flip System.
    ]],
-   homepage = "https://github.com/username/vlip",  -- Replace with your actual repository URL
+   homepage = "https://github.com/arthur-debert/vlip",
    license = "MIT"
 }
 dependencies = {

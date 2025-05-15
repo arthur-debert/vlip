@@ -10,10 +10,10 @@ manage configurations.
 
 ```bash
 # Tap the repository
-brew tap adebert/vlip https://github.com/adebert/vlip.git
+brew tap arthur-debert/vlip https://github.com/arthur-debert/vlip.git
 
 # Install vlip
-brew install adebert/vlip/vlip
+brew install arthur-debert/vlip/vlip
 ```
 
 ### Manual Installation
