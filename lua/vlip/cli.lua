@@ -1,4 +1,5 @@
 -- CLI interface for vlip
+
 local M = {}
 
 -- Version information
@@ -7,29 +8,10 @@ M.VERSION = "0.1.0"
 -- Import the core module
 local vlip = require("vlip.core")
 
--- Import Lummander and its dependencies
-local ok, lummander = pcall(require, "lummander")
-local chalk
-if ok then
-  -- Use Lummander's chalk for colorized output
-  chalk = require("chalk")
-else
-  -- Fallback if Lummander is not available
-  lummander = nil
-  -- Create a simple chalk replacement
-  chalk = {
-    blue = function(str) return str end,
-    green = function(str) return str end,
-    red = function(str) return str end,
-    yellow = function(str) return str end
-  }
-  print("Warning: Lummander not found, using basic CLI interface")
-end
-
 -- Parse command line arguments
 function M.parse_args(args)
   if #args < 1 then
-    print(chalk.blue("Usage: vlip <command> [options]"))
+    print("Usage: vlip <command> [options]")
     print("Commands:")
     print("  init                                   - Initialize the plugin system")
     print("  enable <plugin> [<plugin>...] [--all]  - Enable specified plugins or all")
@@ -45,10 +27,10 @@ function M.parse_args(args)
   table.remove(args, 1)
   
   if command == "--version" then
-    print(chalk.blue("vlip version " .. M.VERSION))
+    print("vlip version " .. M.VERSION)
     return true
   elseif command == "init" then
-    return vlip.init()
+    vlip.init()
   elseif command == "enable" then
     local all = false
     local plugins = {}
@@ -62,7 +44,6 @@ function M.parse_args(args)
     end
     
     vlip.enable(plugins, all)
-    return true
   elseif command == "disable" then
     local all = false
     local plugins = {}
@@ -76,7 +57,6 @@ function M.parse_args(args)
     end
     
     vlip.disable(plugins, all)
-    return true
   elseif command == "health-check" then
     local fix = false
     
@@ -86,35 +66,17 @@ function M.parse_args(args)
       end
     end
     
-    return vlip.health_check(fix)
+    vlip.health_check(fix)
   elseif command == "list-available" then
     vlip.list_available()
-    return true
   elseif command == "list-enabled" then
     vlip.list_enabled()
-    return true
-  elseif command == "configure" then
-    local opts = {}
-    
-    for i = 1, #args - 1, 2 do
-      local key = args[i]
-      local value = args[i + 1]
-      
-      if key == "--config-dir" then
-        opts.config_dir = value
-      elseif key == "--plugins-dir" then
-        opts.plugins_dir = value
-      elseif key == "--available-dir" then
-        opts.available_dir = value
-      end
-    end
-    
-    vlip.configure(opts)
-    return true
   else
-    print(chalk.red("Unknown command: " .. command))
+    print("Unknown command: " .. command)
     return false
   end
+  
+  return true
 end
 
 -- Main entry point for CLI
