@@ -48,6 +48,6 @@ jobs:
           ./scripts/release.sh ${{ env.TAG_NAME }} true
           
           # Commit and push changes
-          git add lua/vlip/cli.lua vlip-${VERSION}-1.rockspec homebrew-vlip/Formula/vlip.rb
+          git add lua/vlip/cli.lua homebrew-vlip/Formula/vlip.rb
           git commit -m "Release ${{ env.TAG_NAME }}" || echo "No changes to commit"
           git push origin brew

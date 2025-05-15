@@ -25,13 +25,8 @@ class Vlip < Formula
     ENV["LUA_PATH"] = "#{luarocks_prefix}/share/lua/#{lua_version}/?.lua;#{luarocks_prefix}/share/lua/#{lua_version}/?/init.lua;;"
     ENV["LUA_CPATH"] = "#{luarocks_prefix}/lib/lua/#{lua_version}/?.so;;"
 
-    # Install the rockspec and its dependencies into luarocks_prefix
-    # Use the appropriate rockspec file based on whether this is a HEAD or stable installation
-    rockspec_file = if build.head?
-                      "vlip-scm-1.rockspec"
-                    else
-                      "vlip-#{version}-1.rockspec"
-                    end
+    # Always use the scm rockspec file to avoid accumulating version-specific rockspecs
+    rockspec_file = "vlip-scm-1.rockspec"
 
     system "luarocks", "make", "--tree=#{luarocks_prefix}", rockspec_file
 

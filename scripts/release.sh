@@ -19,12 +19,10 @@ echo "Updating version in code..."
 sed -i.bak "s/M.VERSION = \".*\"/M.VERSION = \"$VERSION\"/" lua/vlip/cli.lua
 rm lua/vlip/cli.lua.bak
 
-# Create rockspec file
-echo "Creating rockspec file..."
-cp vlip-scm-1.rockspec vlip-$VERSION-1.rockspec
-sed -i.bak "s/version = \"scm-1\"/version = \"$VERSION-1\"/" vlip-$VERSION-1.rockspec
-sed -i.bak "s/tag = \".*\"/tag = \"$TAG_NAME\"/" vlip-$VERSION-1.rockspec
-rm vlip-$VERSION-1.rockspec.bak
+# Generate temporary rockspec file for SHA256 calculation only
+echo "Generating temporary rockspec for SHA256 calculation..."
+TMP_ROCKSPEC=$(mktemp)
+cat rockspec_template.lua | sed "s/\$VERSION/$VERSION-1/g" | sed "s/\$TAG/$TAG_NAME/g" > "$TMP_ROCKSPEC"
 
 # Calculate tarball URL and SHA256
 REPO_OWNER=$(git remote get-url origin | sed -n 's/.*github.com[:/]\([^/]*\)\/[^/]*\.git/\1/p')
@@ -65,6 +63,13 @@ sed -i.bak "s|version \".*\"|version \"$VERSION\"|" homebrew-vlip/Formula/vlip.r
 
 # Make sure head block points to main branch
 sed -i.bak "s|head do.*|head do\n    url \"https://github.com/$REPO_OWNER/$REPO_NAME.git\", branch: \"main\"\n  end|" homebrew-vlip/Formula/vlip.rb
+
+# Clean up temporary rockspec
+rm -f "$TMP_ROCKSPEC"
+
+# Clean up old rockspec files (keep only scm version)
+echo "Cleaning up old rockspec files..."
+find . -name "vlip-*.rockspec" -not -name "vlip-scm-1.rockspec" -print
 
 rm homebrew-vlip/Formula/vlip.rb.bak
 
