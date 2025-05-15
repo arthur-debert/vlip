@@ -41,9 +41,6 @@ local function normalize_path(path_str)
     end
   end
 
-  -- Initialize path module if needed
-  init_path()
-
   -- Use path.normalize to handle path normalization
   local normalized = path.normalize(path_str)
 
