@@ -44,10 +44,10 @@ This document outlines test cases that should be added to improve the test cover
 
 ### disable command
 
-1. Test disabling plugins that are symlinks but point to non-existent targets
-2. Test disabling plugins that aren't symlinks (regular files in the plugins directory)
-3. Test disabling a plugin with a name containing special characters
-4. Test disabling a plugin that was just enabled in the same session
+1. ✅ Test disabling plugins that are symlinks but point to non-existent targets
+2. ✅ Test disabling plugins that aren't symlinks (regular files in the plugins directory)
+3. ✅ Test disabling a plugin with a name containing special characters
+4. ✅ Test disabling a plugin that was just enabled in the same session
 
 ### health_check command
 
