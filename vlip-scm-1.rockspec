@@ -18,10 +18,11 @@ dependencies = {
    -- Add any other dependencies here
 }
 
-dev_dependencies = {
-   "busted >= 2.0.0",
-   "luassert >= 1.9.0"
-}
+-- Development dependencies (commented out as not supported in rockspec format 1.0)
+-- dev_dependencies = {
+--    "busted >= 2.0.0",
+--    "luassert >= 1.9.0"
+-- }
 build = {
    type = "builtin",
    modules = {
