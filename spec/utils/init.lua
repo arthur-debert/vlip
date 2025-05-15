@@ -9,11 +9,12 @@ local test_utils = require("spec.utils.test_utils")
 local utils = {
   -- Filesystem mocking
   fs_mock = fs_mock,
-  
+
   -- Test fixture utilities
   setup_fixture = test_utils.setup_fixture,
   teardown_fixture = test_utils.teardown_fixture,
-  capture_print = test_utils.capture_print
+  capture_print = test_utils.capture_print,
+  run_workflow = test_utils.run_workflow
 }
 
 return utils
