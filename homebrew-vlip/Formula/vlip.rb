@@ -1,16 +1,11 @@
 class Vlip < Formula
   desc "Vim Plugin Flip System"
   homepage "https://github.com/arthur-debert/vlip"
+  url "https://github.com/arthur-debert/vlip/archive/refs/tags/v0.20.4.tar.gz"
+  sha256 "1c60eca00e1807e226b82b89131f3aeee8c3b533a18ae852587c2ca1b554a34b"
+  version "0.20.4"
   license "MIT"
 
-  # For stable releases - use a tarball URL when available
-  stable do
-    url "https://github.com/arthur-debert/vlip/archive/refs/tags/v0.20.4.tar.gz"
-    sha256 "1c60eca00e1807e226b82b89131f3aeee8c3b533a18ae852587c2ca1b554a34b"
-    version "0.20.4"
-  end
-
-  # For development versions
   head do
     url "https://github.com/arthur-debert/vlip.git", branch: "main"
   end
@@ -35,7 +30,7 @@ class Vlip < Formula
     rockspec_file = if build.head?
                       "vlip-scm-1.rockspec"
                     else
-                      "vlip-0.20.4-1.rockspec"
+                      "vlip-#{version}-1.rockspec"
                     end
 
     system "luarocks", "make", "--tree=#{luarocks_prefix}", rockspec_file
