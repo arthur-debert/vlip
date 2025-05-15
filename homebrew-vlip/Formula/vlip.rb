@@ -5,14 +5,14 @@ class Vlip < Formula
 
   # For stable releases - use a tarball URL when available
   stable do
-    url "https://github.com/arthur-debert/vlip/archive/refs/tags/v0.20.2.tar.gz"
+    url "https://github.com/arthur-debert/vlip/archive/refs/tags/v0.20.3.tar.gz"
     sha256 "d5558cd419c8d46bdc958064cb97f963d1ea793866414c025906ec15033512ed"
-    version "0.20.2"
+    version "0.20.3"
   end
 
   # For development versions
   head do
-    url "https://github.com/arthur-debert/vlip/archive/refs/tags/v0.20.2.tar.gz"
+    url "https://github.com/arthur-debert/vlip/archive/refs/tags/v0.20.3.tar.gz"
   end
 
   depends_on "lua"
@@ -33,9 +33,9 @@ class Vlip < Formula
     # Install the rockspec and its dependencies into luarocks_prefix
     # Use the appropriate rockspec file based on whether this is a HEAD or stable installation
     rockspec_file = if build.head?
-                      "vlip-0.20.2-1.rockspec"
+                      "vlip-0.20.3-1.rockspec"
                     else
-                      "vlip-0.20.2-1.rockspec"
+                      "vlip-0.20.3-1.rockspec"
                     end
 
     system "luarocks", "make", "--tree=#{luarocks_prefix}", rockspec_file
