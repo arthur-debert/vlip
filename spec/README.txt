@@ -25,6 +25,9 @@ The utils module provides the following functionality:
    - `utils.fs_mock.get_symlink(path)` - Get mock symlink target
    - `utils.fs_mock.file_exists(path)` - Check if a mock file exists
    - `utils.fs_mock.directory_exists(path)` - Check if a mock directory exists
+   - `utils.fs_mock.enable_debug()` - Enable detailed debug logging
+   - `utils.fs_mock.disable_debug()` - Disable debug logging
+   - `utils.fs_mock.dump_state()` - Print current mock filesystem state
 
 2. **Test Fixtures**
    - `utils.setup_fixture(config)` - Set up a test fixture with plugins
@@ -121,6 +124,33 @@ printer.restore()
 
 -- Verify output
 assert.equals("Available plugins:", printer.output[1])
+```
+
+### Debugging Filesystem Operations
+
+For tests with complex filesystem interactions, use the enhanced debugging features:
+
+```lua
+-- Enable debug mode to see detailed filesystem operations
+utils.fs_mock.enable_debug()
+
+-- Run your test operations
+core.init()
+core.enable({"plugin1"}, false)
+
+-- Print the current state of the mock filesystem
+utils.fs_mock.dump_state()
+
+-- Disable debug mode when done
+utils.fs_mock.disable_debug()
+```
+
+Debug output can also be triggered with the VLIP_DEBUG environment variable:
+
+```lua
+if os.getenv("VLIP_DEBUG") then
+  utils.fs_mock.dump_state()
+end
 ```
 
 ## Running Tests
