@@ -1,10 +1,26 @@
 -- Test utilities for VLIP
--- Add the project's lua directory to the package path
-package.path = "./?.lua;./?/init.lua;./lua/?.lua;./lua/?/init.lua;" .. package.path
-
 local fs_mock = require("spec.utils.fs_mock")
-local core = require("vlip.core")
 local test_utils = {}
+
+-- Helper function to safely require a module
+local function safe_require(module_name)
+  -- Add all possible package paths
+  package.path = table.concat({
+    "./?.lua",
+    "./?/init.lua",
+    "./lua/?.lua",
+    "./lua/?/init.lua",
+    "./.luarocks/share/lua/5.1/?.lua",
+    "./.luarocks/share/lua/5.1/?/init.lua",
+    package.path
+  }, ";")
+
+  local ok, result = pcall(require, module_name)
+  if not ok then
+    error("Failed to require " .. module_name .. ": " .. tostring(result))
+  end
+  return result
+end
 
 -- Default configuration
 local default_config = {
@@ -80,6 +96,7 @@ function test_utils.setup_fixture(config)
   end
 
   -- Configure VLIP to use our mock paths
+  local core = safe_require("vlip.core")
   core.configure(cfg)
 
   return cfg
