@@ -140,14 +140,17 @@ function test_utils.run_workflow(steps, debug_mode)
 
     -- Verify step result
     if error_msg then
-      assert(false, "Step " .. i .. " failed with error: " .. error_msg)
+      assert(false, "Step " .. i .. " failed with error: " .. tostring(error_msg))
     end
 
     -- Optional verification after the step
     if step.verify then
       local verify_status, verify_error = pcall(step.verify, result)
       if not verify_status then
-        assert(false, "Verification for step " .. i .. " failed: " .. verify_error)
+        local error_str = type(verify_error) == "table"
+            and "table (use debug mode to see details)"
+            or tostring(verify_error)
+        assert(false, "Verification for step " .. i .. " failed: " .. error_str)
       end
     end
 

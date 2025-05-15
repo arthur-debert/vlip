@@ -28,6 +28,25 @@ local function debug_log(message)
   table.insert(mock_state.operation_log, message)
 end
 
+-- Track operation with more structured data for debugging
+local function track_operation(operation_type, details)
+  local operation = {
+    type = operation_type,
+    details = details,
+    timestamp = os.time()
+  }
+  table.insert(mock_state.operation_log, operation)
+
+  if mock_state.debug_mode then
+    print(string.format("[MOCK TRACE] %s: %s",
+      operation.type,
+      type(details) == "table" and
+      ("path=" .. (details.path or "unknown") ..
+        (details.target and (", target=" .. details.target) or "")) or
+      tostring(details)))
+  end
+end
+
 -- Setup the mocks
 function fs_mock.setup()
   -- Save original functions
@@ -40,6 +59,7 @@ function fs_mock.setup()
   -- Replace io.open
   io.open = function(path, mode)
     debug_log("io.open called with path: " .. path .. ", mode: " .. mode)
+    track_operation("io.open", { path = path, mode = mode })
 
     if mode == "r" then
       if not mock_state.files[path] and not mock_state.symlinks[path] then
@@ -285,6 +305,21 @@ function fs_mock.get_log()
   return mock_state.operation_log
 end
 
+-- Get structured operations (filtered by type if specified)
+function fs_mock.get_operations(operation_type)
+  if not operation_type then
+    return mock_state.operation_log
+  end
+
+  local filtered = {}
+  for _, op in ipairs(mock_state.operation_log) do
+    if type(op) == "table" and op.type == operation_type then
+      table.insert(filtered, op)
+    end
+  end
+  return filtered
+end
+
 -- Dump the current state
 function fs_mock.dump_state()
   print("--- Mock Filesystem State ---")
@@ -303,19 +338,51 @@ function fs_mock.dump_state()
   print("---------------------------")
 end
 
+-- Dump operation history
+function fs_mock.dump_operations(num_ops)
+  num_ops = num_ops or 10 -- Default to last 10 operations
+
+  print("--- Last " .. num_ops .. " Mock Operations ---")
+  local start_idx = math.max(1, #mock_state.operation_log - num_ops + 1)
+
+  for i = start_idx, #mock_state.operation_log do
+    local op = mock_state.operation_log[i]
+    if type(op) == "table" then
+      local details_str = ""
+      if type(op.details) == "table" then
+        details_str = "path=" .. (op.details.path or "unknown")
+        if op.details.target then
+          details_str = details_str .. ", target=" .. op.details.target
+        end
+      else
+        details_str = tostring(op.details)
+      end
+
+      print(string.format("  %d. %s: %s",
+        i, op.type, details_str))
+    else
+      print(string.format("  %d. %s", i, tostring(op)))
+    end
+  end
+  print("---------------------------")
+end
+
 -- Helper functions to manipulate the mock state
 function fs_mock.set_file(path, content)
   debug_log("Setting file: " .. path)
+  track_operation("set_file", { path = path, size = #content })
   mock_state.files[path] = content
 end
 
 function fs_mock.set_directory(path)
   debug_log("Setting directory: " .. path)
+  track_operation("set_directory", { path = path })
   mock_state.directories[path] = true
 end
 
 function fs_mock.set_symlink(src, dst)
   debug_log("Setting symlink: " .. dst .. " -> " .. src)
+  track_operation("set_symlink", { path = dst, target = src })
   mock_state.symlinks[dst] = src
 end
 

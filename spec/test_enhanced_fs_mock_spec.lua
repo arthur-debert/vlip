@@ -24,27 +24,39 @@ describe("Enhanced fs_mock tests", function()
         fs_mock.set_symlink("/test/file.txt", "/test/link.txt")
 
         -- Check operation log
-        local log = fs_mock.get_log()
+        local log = fs_mock.get_operations()
         assert.is_true(#log > 0, "Operation log should not be empty")
 
-        -- Verify specific operations were logged
-        local found_set_file = false
-        local found_set_dir = false
-        local found_set_symlink = false
+        -- Get filtered operations by type
+        local set_file_ops = fs_mock.get_operations("set_file")
+        local set_dir_ops = fs_mock.get_operations("set_directory")
+        local set_symlink_ops = fs_mock.get_operations("set_symlink")
 
-        for _, entry in ipairs(log) do
-            if entry:match("Setting file: /test/file.txt") then
-                found_set_file = true
-            elseif entry:match("Setting directory: /test/dir") then
-                found_set_dir = true
-            elseif entry:match("Setting symlink: /test/link.txt") then
-                found_set_symlink = true
-            end
+        -- Verify specific operations were logged
+        assert.is_true(#set_file_ops > 0, "set_file operations should be tracked")
+        assert.is_true(#set_dir_ops > 0, "set_directory operations should be tracked")
+        assert.is_true(#set_symlink_ops > 0, "set_symlink operations should be tracked")
+
+        -- Verify operation details
+        for _, op in ipairs(set_file_ops) do
+            assert.equals("set_file", op.type)
+            assert.is_not_nil(op.details.path)
+            assert.is_not_nil(op.details.size)
         end
 
-        assert.is_true(found_set_file, "Setting file operation not logged")
-        assert.is_true(found_set_dir, "Setting directory operation not logged")
-        assert.is_true(found_set_symlink, "Setting symlink operation not logged")
+        for _, op in ipairs(set_dir_ops) do
+            assert.equals("set_directory", op.type)
+            assert.is_not_nil(op.details.path)
+        end
+
+        for _, op in ipairs(set_symlink_ops) do
+            assert.equals("set_symlink", op.type)
+            assert.is_not_nil(op.details.path)
+            assert.is_not_nil(op.details.target)
+        end
+
+        -- Test the dump_operations function (visually check output)
+        fs_mock.dump_operations(10)
 
         -- Cleanup
         fs_mock.disable_debug()

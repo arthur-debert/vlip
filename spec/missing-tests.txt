@@ -78,11 +78,11 @@ This document outlines test cases that should be added to improve the test cover
 ## Integration Tests
 
 1. ✅ Test enable followed by disable for the same plugin
-2. ❓ Test init followed by health_check (Issues with health_check's broken symlink detection in integration context)
+2. ✅ Test init followed by health_check (Using the workflow helper to properly test broken symlink detection)
 3. ✅ Test enable --all followed by disable for specific plugins
-4. ❓ Test disable --all followed by enable for specific plugins
-5. ❓ Test init followed by enable for new plugins
-6. ❓ Test the full workflow: init -> enable some plugins -> disable some plugins -> health_check
+4. ✅ Test disable --all followed by enable for specific plugins (Implemented using workflow helper for reliable setup/teardown)
+5. ✅ Test init followed by enable for new plugins (Implemented using workflow helper to verify each step)
+6. ✅ Test the full workflow: init -> enable -> disable -> health_check (Implemented with multi-step verification)
 
 ## Configuration Tests
 
