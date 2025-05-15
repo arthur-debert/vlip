@@ -14,11 +14,7 @@ description = {
    license = "MIT"  
 }
 dependencies = {
-   "lua >= 5.1",
-   "lummander >= 0.1",
-   "chalk >= 0.1.0",
-   "f >= 0.1.0",
-   "luafilesystem >= 1.7.0"
+   "lua >= 5.1"
    -- Add any other dependencies here
 }
 build = {
