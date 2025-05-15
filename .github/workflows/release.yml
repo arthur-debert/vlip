@@ -40,6 +40,14 @@ jobs:
       - name: Commit and push changes
         run: |
           VERSION=${TAG_NAME#v}
+          # Checkout the main branch to avoid detached HEAD state
+          git fetch origin
+          git checkout brew
+          
+          # Run the release script again to update files on the branch
+          ./scripts/release.sh ${{ env.TAG_NAME }} true
+          
+          # Commit and push changes
           git add lua/vlip/cli.lua vlip-${VERSION}-1.rockspec homebrew-vlip/Formula/vlip.rb
           git commit -m "Release ${{ env.TAG_NAME }}" || echo "No changes to commit"
-          git push
+          git push origin brew
