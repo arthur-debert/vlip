@@ -6,7 +6,8 @@
 set -e
 
 # Set up Lua path to include the project files and test utilities
-export LUA_PATH="./?.lua;./?/init.lua;./lua/?.lua;./lua/?/init.lua;;$LUA_PATH"
+# Keep existing LUA_PATH and add our paths at the beginning
+export LUA_PATH="./?.lua;./?/init.lua;./lua/?.lua;./lua/?/init.lua;$LUA_PATH"
 
 echo "Running VLIP test suite..."
 
