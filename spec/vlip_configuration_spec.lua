@@ -202,4 +202,165 @@ describe("VLIP configuration tests", function()
         assert.is_true(contains(enabled, "plugin1.lua"), "plugin1 should be enabled")
         assert.is_true(contains(enabled, "plugin2.lua"), "plugin2 should be enabled")
     end)
+
+    it("should work with absolute paths for configuration", function()
+        -- Setup filesystem mocking
+        utils.fs_mock.setup()
+        utils.fs_mock.reset()
+
+        -- Use absolute paths for all configuration
+        local config_dir = "/absolute/config/path"
+        local plugins_dir = "/absolute/plugins/path"
+        local available_dir = "/absolute/available/path"
+
+        -- Create the directories in the mock filesystem
+        utils.fs_mock.set_directory(config_dir)
+        utils.fs_mock.set_directory(plugins_dir)
+        utils.fs_mock.set_directory(available_dir)
+
+        -- Add a plugin file to the plugins directory
+        utils.fs_mock.set_file(plugins_dir .. "/plugin1.lua", "-- Plugin 1 content")
+
+        -- Helper function to check if a plugin is in a list
+        local function contains(list, item)
+            for _, value in ipairs(list) do
+                if value == item then return true end
+            end
+            return false
+        end
+
+        -- Configure VLIP with absolute paths
+        core.configure({
+            config_dir = config_dir,
+            plugins_dir = plugins_dir,
+            available_dir = available_dir
+        })
+
+        -- Run init
+        local init_result = core.init()
+        assert.is_true(init_result)
+
+        -- Verify that files were correctly processed
+        assert.equals("-- Plugin 1 content",
+            utils.fs_mock.get_file(available_dir .. "/plugin1.lua"))
+
+        -- Verify symlink was created correctly
+        assert.equals(available_dir .. "/plugin1.lua",
+            utils.fs_mock.get_symlink(plugins_dir .. "/plugin1.lua"))
+
+        -- Add a new plugin to the available directory
+        utils.fs_mock.set_file(available_dir .. "/plugin2.lua", "-- Plugin 2 content")
+
+        -- Enable the new plugin
+        local enable_result = core.enable({ "plugin2.lua" }, false)
+        assert.is_true(enable_result)
+
+        -- Verify the symlink was created correctly
+        assert.equals(available_dir .. "/plugin2.lua",
+            utils.fs_mock.get_symlink(plugins_dir .. "/plugin2.lua"))
+
+        -- List plugins using core API to verify everything is correctly detected
+        local available = core.get_available_plugins()
+        local enabled = core.get_enabled_plugins()
+
+        assert.equals(2, #available, "Should have 2 available plugins")
+        assert.equals(2, #enabled, "Should have 2 enabled plugins")
+        assert.is_true(contains(available, "plugin1.lua"), "plugin1 should be available")
+        assert.is_true(contains(available, "plugin2.lua"), "plugin2 should be available")
+        assert.is_true(contains(enabled, "plugin1.lua"), "plugin1 should be enabled")
+        assert.is_true(contains(enabled, "plugin2.lua"), "plugin2 should be enabled")
+    end)
+
+    it("should work with non-standard directory structure", function()
+        -- Setup filesystem mocking
+        utils.fs_mock.setup()
+        utils.fs_mock.reset()
+
+        -- Use a completely non-standard directory structure
+        local config_dir = "/opt/custom/nvim-config"
+        local plugins_dir = "/var/lib/custom-plugins"
+        local available_dir = "/usr/share/plugin-library"
+
+        -- Create the directories in the mock filesystem
+        utils.fs_mock.set_directory(config_dir)
+        utils.fs_mock.set_directory(plugins_dir)
+        utils.fs_mock.set_directory(available_dir)
+
+        -- Add a plugin file to the plugins directory
+        utils.fs_mock.set_file(plugins_dir .. "/custom-plugin.lua", "-- Custom plugin content")
+
+        -- Helper function to check if a plugin is in a list
+        local function contains(list, item)
+            for _, value in ipairs(list) do
+                if value == item then return true end
+            end
+            return false
+        end
+
+        -- Configure VLIP with non-standard directory structure
+        core.configure({
+            config_dir = config_dir,
+            plugins_dir = plugins_dir,
+            available_dir = available_dir
+        })
+
+        -- Run init
+        local init_result = core.init()
+        assert.is_true(init_result)
+
+        -- Verify that files were correctly processed
+        assert.equals("-- Custom plugin content",
+            utils.fs_mock.get_file(available_dir .. "/custom-plugin.lua"))
+
+        -- Verify symlink was created correctly
+        assert.equals(available_dir .. "/custom-plugin.lua",
+            utils.fs_mock.get_symlink(plugins_dir .. "/custom-plugin.lua"))
+
+        -- Add multiple new plugins to the available directory with unusual names
+        utils.fs_mock.set_file(available_dir .. "/plugin-with-dashes.lua", "-- Plugin with dashes")
+        utils.fs_mock.set_file(available_dir .. "/plugin_with_underscores.lua", "-- Plugin with underscores")
+        utils.fs_mock.set_file(available_dir .. "/weird!@#$%name.lua", "-- Plugin with special chars")
+
+        -- Enable the plugins
+        local enable_result = core.enable({ "plugin-with-dashes.lua",
+            "plugin_with_underscores.lua",
+            "weird!@#$%name.lua" }, false)
+        assert.is_true(enable_result)
+
+        -- Verify the symlinks were created correctly
+        assert.equals(available_dir .. "/plugin-with-dashes.lua",
+            utils.fs_mock.get_symlink(plugins_dir .. "/plugin-with-dashes.lua"))
+        assert.equals(available_dir .. "/plugin_with_underscores.lua",
+            utils.fs_mock.get_symlink(plugins_dir .. "/plugin_with_underscores.lua"))
+        assert.equals(available_dir .. "/weird!@#$%name.lua",
+            utils.fs_mock.get_symlink(plugins_dir .. "/weird!@#$%name.lua"))
+
+        -- List plugins using core API to verify everything is correctly detected
+        local available = core.get_available_plugins()
+        local enabled = core.get_enabled_plugins()
+
+        assert.equals(4, #available, "Should have 4 available plugins")
+        assert.equals(4, #enabled, "Should have 4 enabled plugins")
+        assert.is_true(contains(available, "custom-plugin.lua"), "custom-plugin should be available")
+        assert.is_true(contains(available, "plugin-with-dashes.lua"), "plugin-with-dashes should be available")
+        assert.is_true(contains(available, "plugin_with_underscores.lua"), "plugin_with_underscores should be available")
+        assert.is_true(contains(available, "weird!@#$%name.lua"), "weird!@#$%name should be available")
+
+        -- Test disabling plugins in this non-standard setup
+        local disable_result = core.disable({ "plugin-with-dashes.lua", "weird!@#$%name.lua" }, false)
+        assert.is_true(disable_result)
+
+        -- Verify plugins are disabled
+        local updated_enabled = core.get_enabled_plugins()
+        assert.equals(2, #updated_enabled, "Should have 2 enabled plugins after disabling")
+        assert.is_true(contains(updated_enabled, "custom-plugin.lua"), "custom-plugin should still be enabled")
+        assert.is_true(contains(updated_enabled, "plugin_with_underscores.lua"),
+            "plugin_with_underscores should still be enabled")
+        assert.is_false(contains(updated_enabled, "plugin-with-dashes.lua"), "plugin-with-dashes should be disabled")
+        assert.is_false(contains(updated_enabled, "weird!@#$%name.lua"), "weird!@#$%name should be disabled")
+
+        -- Verify the symlinks were removed
+        assert.is_nil(utils.fs_mock.get_symlink(plugins_dir .. "/plugin-with-dashes.lua"))
+        assert.is_nil(utils.fs_mock.get_symlink(plugins_dir .. "/weird!@#$%name.lua"))
+    end)
 end)
