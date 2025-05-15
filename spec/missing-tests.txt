@@ -36,11 +36,11 @@ This document outlines test cases that should be added to improve the test cover
 
 ### enable command
 
-1. Test enabling a plugin that exists but has invalid content
-2. Test enabling plugins when the plugins directory doesn't exist
-3. Test enabling a plugin with the same name as an existing non-symlink file
-4. Test enabling a plugin when the available-plugins directory doesn't exist
-5. Test enabling a plugin with a name containing special characters
+1. ✅ Test enabling a plugin that exists but has invalid content
+2. ✅ Test enabling plugins when the plugins directory doesn't exist
+3. ✅ Test enabling a plugin with the same name as an existing non-symlink file
+4. ✅ Test enabling a plugin when the available-plugins directory doesn't exist
+5. ✅ Test enabling a plugin with a name containing special characters
 
 ### disable command
 

@@ -58,7 +58,7 @@ end
 
 -- Function to create a directory if it doesn't exist
 local function mkdir(path)
-  return os.execute("mkdir -p " .. path)
+  return os.execute("mkdir -p \"" .. path .. "\"")
 end
 
 -- Function to read a file
@@ -81,12 +81,12 @@ end
 
 -- Function to create a symlink
 local function create_symlink(src, dst)
-  return os.execute("ln -sf " .. src .. " " .. dst)
+  return os.execute("ln -sf \"" .. src .. "\" \"" .. dst .. "\"")
 end
 
 -- Function to remove a file
 local function remove_file(path)
-  return os.execute("rm " .. path)
+  return os.execute("rm \"" .. path .. "\"")
 end
 
 -- Public function to get available plugins

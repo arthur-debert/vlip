@@ -72,7 +72,7 @@ function fs_mock.setup()
   -- Replace io.popen
   io.popen = function(command)
     -- Handle directory listing with ls -1
-    local dir_pattern = command:match("^ls%s+%-1%s+(.+)%s+2>/dev/null$")
+    local dir_pattern = command:match("^ls%s+%-1%s+\"?([^\"]+)\"?%s+2>/dev/null$")
     if dir_pattern then
       local dir = dir_pattern:gsub("%*%.lua", "")
       local results = {}
@@ -109,7 +109,7 @@ function fs_mock.setup()
     end
     
     -- Handle symlink checking with ls -l
-    local symlink_check = command:match("^ls%s+%-l%s+(.+)%s+2>/dev/null$")
+    local symlink_check = command:match("^ls%s+%-l%s+\"?([^\"]+)\"?%s+2>/dev/null$")
     if symlink_check then
       if mock_state.symlinks[symlink_check] then
         return {
@@ -129,7 +129,7 @@ function fs_mock.setup()
     end
     
     -- Handle file existence checking with ls
-    local file_check = command:match("^ls%s+(.+)%s+2>/dev/null$")
+    local file_check = command:match("^ls%s+\"?([^\"]+)\"?%s+2>/dev/null$")
     if file_check then
       if mock_state.files[file_check] or mock_state.symlinks[file_check] then
         return {
@@ -150,21 +150,21 @@ function fs_mock.setup()
   -- Replace os.execute
   os.execute = function(command)
     -- Handle directory creation
-    local mkdir = command:match("^mkdir%s+%-p%s+(.+)$")
+    local mkdir = command:match("^mkdir%s+%-p%s+\"?([^\"]+)\"?$")
     if mkdir then
       mock_state.directories[mkdir] = true
       return 0
     end
     
     -- Handle symlink creation
-    local src, dst = command:match("^ln%s+%-sf%s+(.+)%s+(.+)$")
+    local src, dst = command:match("^ln%s+%-sf%s+\"?([^\"]+)\"?%s+\"?([^\"]+)\"?$")
     if src and dst then
       mock_state.symlinks[dst] = src
       return 0
     end
     
     -- Handle file removal
-    local remove = command:match("^rm%s+(.+)$")
+    local remove = command:match("^rm%s+\"?([^\"]+)\"?$")
     if remove then
       mock_state.files[remove] = nil
       mock_state.symlinks[remove] = nil
