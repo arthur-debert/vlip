@@ -1,0 +1,38 @@
+#!/usr/bin/env lua
+
+-- Find the package path
+local function find_package_path()
+    -- Try to find the package in standard locations
+    local paths = {
+        -- When installed via LuaRocks
+        package.path,
+        -- When running from the project directory
+        arg[0]:match("(.+)/bin/vlip") and arg[0]:match("(.+)/bin/vlip") .. "/lua/?.lua",
+        -- Current directory
+        "./lua/?.lua"
+    }
+    
+    for _, path in ipairs(paths) do
+        if path then
+            package.path = path .. ";" .. package.path
+        end
+    end
+end
+
+-- Setup package path
+find_package_path()
+
+-- Try to load the vlip CLI module
+local ok, cli = pcall(require, "vlip.cli")
+if not ok then
+    print("Error: Could not load vlip.cli module")
+    print("Make sure vlip is properly installed or you're running from the project directory")
+    print("Error details: " .. cli)
+    os.exit(1)
+end
+
+-- Run the CLI with command line arguments
+local success = cli.run(arg)
+if not success then
+    os.exit(1)
+end
