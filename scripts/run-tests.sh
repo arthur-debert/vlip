@@ -5,8 +5,8 @@
 # Fail on errors
 set -e
 
-# Set up Lua path to include the project files
-export LUA_PATH="./lua/?.lua;./lua/?/init.lua;;$LUA_PATH"
+# Set up Lua path to include the project files and test utilities
+export LUA_PATH="./?.lua;./?/init.lua;./lua/?.lua;./lua/?/init.lua;;$LUA_PATH"
 
 echo "Running VLIP test suite..."
 
