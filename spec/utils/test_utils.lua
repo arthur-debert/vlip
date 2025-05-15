@@ -12,6 +12,8 @@ local function safe_require(module_name)
     "./lua/?/init.lua",
     "./.luarocks/share/lua/5.1/?.lua",
     "./.luarocks/share/lua/5.1/?/init.lua",
+    "/home/runner/.luarocks/share/lua/5.1/?.lua",
+    "/home/runner/.luarocks/share/lua/5.1/?/init.lua",
     package.path
   }, ";")
 
