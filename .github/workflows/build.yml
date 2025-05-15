@@ -3,6 +3,8 @@ name: Build and Install
 on:
   push:
     branches: [main]
+    tags:
+      - "v*" # This will trigger on any tag starting with 'v'
   pull_request:
     branches: [main]
   workflow_dispatch: # Allow manual triggering
@@ -32,4 +34,4 @@ jobs:
 
       - name: Verify installation
         run: |
-          $HOME/.luarocks/bin/vlip--version
+          $HOME/.luarocks/bin/vlip --version
