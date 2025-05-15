@@ -33,6 +33,7 @@ The utils module provides the following functionality:
    - `utils.setup_fixture(config)` - Set up a test fixture with plugins
    - `utils.teardown_fixture()` - Tear down a test fixture
    - `utils.capture_print()` - Capture print output for testing
+   - `utils.run_workflow(steps, debug_mode)` - Run a multi-step workflow test
 
 ## Writing Tests
 
@@ -153,6 +154,60 @@ if os.getenv("VLIP_DEBUG") then
 end
 ```
 
+### Multi-Step Workflow Testing
+
+For tests that involve multiple operations in sequence, use the workflow helper:
+
+```lua
+-- Setup initial test fixture
+local cfg = utils.setup_fixture({
+  plugins = {
+    { name = "plugin1.lua", content = "-- Plugin 1 content" }
+  }
+})
+
+-- Define and run a multi-step workflow
+utils.run_workflow({
+  {
+    description = "Initialize the plugin system",
+    action = function()
+      return core.init()
+    end,
+    verify = function(result)
+      assert.is_true(result)
+      
+      -- Verify state using core API functions
+      local available = core.get_available_plugins()
+      assert.equals(1, #available)
+    end
+  },
+  {
+    description = "Enable a new plugin",
+    action = function()
+      -- First add a new plugin to available
+      utils.fs_mock.set_file(cfg.available_dir .. "/plugin2.lua", "-- Content")
+      
+      -- Then enable it
+      return core.enable({ "plugin2.lua" }, false)
+    end,
+    verify = function(result)
+      assert.is_true(result)
+      
+      -- Verify using core API
+      local enabled = core.get_enabled_plugins()
+      assert.equals(2, #enabled)
+    end,
+    debug = true  -- This step will dump state even without debug_mode
+  }
+}, false)  -- Set to true to enable debugging for all steps
+```
+
+Each step has:
+- `description`: Optional description of the step
+- `action`: Function to execute for this step (required)
+- `verify`: Function to verify the state after the step
+- `debug`: Boolean to enable state dumping for this specific step
+
 ## Running Tests
 
 Run all tests:
@@ -172,4 +227,6 @@ busted spec/your_test_file.lua
 See these files for examples:
 
 - `spec/fs_mock_spec.lua` - Tests for the filesystem mocking functionality
+- `spec/test_enhanced_fs_mock_spec.lua` - Tests for enhanced fs_mock functionality
 - `spec/vlip_fixture_example_spec.lua` - Example tests using the fixture utilities
+- `spec/vlip_workflow_helper_example_spec.lua` - Example of multi-step workflow testing
