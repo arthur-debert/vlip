@@ -68,12 +68,12 @@ This document outlines test cases that should be added to improve the test cover
 
 ### CLI argument parsing
 
-1. Test with invalid commands
-2. Test with invalid arguments
-3. Test with missing required arguments
-4. Test with extra/unexpected arguments
-5. Test help command and version display
-6. Test with combined flags (e.g., enable --all with additional plugin names)
+1. ✅ Test with invalid commands
+2. ✅ Test with invalid arguments
+3. ✅ Test with missing required arguments
+4. ✅ Test with extra/unexpected arguments
+5. ✅ Test help command and version display
+6. ✅ Test with combined flags (e.g., enable --all with additional plugin names)
 
 ## Integration Tests
 
