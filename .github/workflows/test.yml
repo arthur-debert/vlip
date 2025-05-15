@@ -24,8 +24,8 @@ jobs:
       
       - name: Install dependencies
         run: |
-          luarocks install --dev vlip-scm-1.rockspec
+          ./scripts/install-deps.sh
       
       - name: Run tests
         run: |
-          busted spec
+          ./scripts/run-tests.sh
