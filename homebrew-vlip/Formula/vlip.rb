@@ -6,7 +6,7 @@ class Vlip < Formula
   # For stable releases - use a tarball URL when available
   stable do
     url "https://github.com/arthur-debert/vlip/archive/refs/tags/v0.20.4.tar.gz"
-    sha256 "d5558cd419c8d46bdc958064cb97f963d1ea793866414c025906ec15033512ed"
+    sha256 "1c60eca00e1807e226b82b89131f3aeee8c3b533a18ae852587c2ca1b554a34b"
     version "0.20.4"
   end
 
