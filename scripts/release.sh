@@ -56,13 +56,13 @@ fi
 
 # Update Homebrew formula
 echo "Updating Homebrew formula..."
-# Update URL, SHA256 and version
-sed -i.bak "s|url \".*\"|url \"$TARBALL_URL\"|" homebrew-vlip/Formula/vlip.rb
+# Update URL, SHA256 and version - only update the first URL (for stable)
+sed -i.bak "0,/url \".*\"/s|url \".*\"|url \"$TARBALL_URL\"|" homebrew-vlip/Formula/vlip.rb
 sed -i.bak "s|sha256 \".*\"|sha256 \"$SHA256\"|" homebrew-vlip/Formula/vlip.rb
 sed -i.bak "s|version \".*\"|version \"$VERSION\"|" homebrew-vlip/Formula/vlip.rb
 
-# Make sure head block points to main branch
-sed -i.bak "s|head do.*|head do\n    url \"https://github.com/$REPO_OWNER/$REPO_NAME.git\", branch: \"main\"\n  end|" homebrew-vlip/Formula/vlip.rb
+# Make sure head block is correct - use a more specific pattern
+sed -i.bak "s|head do\n.*\n  end|head do\n    url \"https://github.com/$REPO_OWNER/$REPO_NAME.git\", branch: \"main\"\n  end|" homebrew-vlip/Formula/vlip.rb
 
 # Clean up temporary rockspec
 rm -f "$TMP_ROCKSPEC"
