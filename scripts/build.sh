@@ -1,5 +1,5 @@
 #!/bin/bash
-# Script to build and install VLIP
+# Script to build VLIP, in .build/bin/vlip
 # Can be used both locally and in CI environments
 
 # Fail on errors
@@ -25,14 +25,17 @@ fi
 
 echo "Generated rock file: $ROCK_FILE"
 
-# Install the rock locally
-echo "Installing the rock..."
-luarocks install --local $ROCK_FILE
+# Install the rock file to a local directory
+echo "Installing rock file to $BUILD_DIR..."
+luarocks install --tree=$BUILD_DIR $ROCK_FILE
 
-# Get the luarocks local binary path
-LUAROCKS_PATH=$(luarocks path --lr-bin)
-VLIP_BIN="$HOME/.luarocks/bin/vlip"
+# Make sure the binary is executable
+chmod +x $BUILD_DIR/bin/vlip
+
+VLIP_BIN="$BUILD_DIR/bin/vlip"
 
 echo "VLIP built and installed successfully!"
-echo "You can now run vlip from: $VLIP_BIN"
-echo "Or add $HOME/.luarocks/bin to your PATH to run 'vlip' directly."
+echo ""
+echo ""
+echo "You can now run vlip from: "
+echo "$VLIP_BIN"

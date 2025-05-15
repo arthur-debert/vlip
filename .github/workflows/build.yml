@@ -33,4 +33,4 @@ jobs:
 
       - name: Verify installation
         run: |
-          $HOME/.luarocks/bin/vlip --version
+          .build/bin/vlip --version
