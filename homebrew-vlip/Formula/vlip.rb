@@ -1,9 +1,19 @@
 class Vlip < Formula
   desc "Vim Plugin Flip System"
   homepage "https://github.com/arthur-debert/vlip"
-  url "https://github.com/arthur-debert/vlip.git", branch: "main"
-  version "0.1.0"
   license "MIT"
+
+  # For stable releases - use a tarball URL when available
+  stable do
+    url "https://github.com/arthur-debert/vlip/archive/refs/tags/v0.20.1.tar.gz"
+    sha256 "d5558cd419c8d46bdc958064cb97f963d1ea793866414c025906ec15033512ed"
+    version "0.20.1"
+  end
+
+  # For development versions
+  head do
+    url "https://github.com/arthur-debert/vlip/archive/refs/tags/v0.20.1.tar.gz"
+  end
 
   depends_on "lua"
   depends_on "luarocks" => :build
@@ -21,7 +31,14 @@ class Vlip < Formula
     ENV["LUA_CPATH"] = "#{luarocks_prefix}/lib/lua/#{lua_version}/?.so;;"
 
     # Install the rockspec and its dependencies into luarocks_prefix
-    system "luarocks", "make", "--tree=#{luarocks_prefix}", "vlip-scm-1.rockspec"
+    # Use the appropriate rockspec file based on whether this is a HEAD or stable installation
+    rockspec_file = if build.head?
+                      "vlip-0.20.1-1.rockspec"
+                    else
+                      "vlip-0.20.1-1.rockspec"
+                    end
+
+    system "luarocks", "make", "--tree=#{luarocks_prefix}", rockspec_file
 
     # Create a wrapper script for the vlip executable
     (bin/"vlip").write_env_script "#{luarocks_prefix}/bin/vlip",

@@ -3,7 +3,7 @@
 local M = {}
 
 -- Version information
-M.VERSION = "0.1.0"
+M.VERSION = "0.20.1"
 
 -- Import the core module
 local vlip = require("vlip.core")
