@@ -49,3 +49,4 @@ lua_modules/
 
 # Local files not under version control
 .gitignoreme
+.build
