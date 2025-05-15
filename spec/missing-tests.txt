@@ -1,0 +1,94 @@
+# VLIP Missing Test Cases
+
+This document outlines test cases that should be added to improve the test coverage of VLIP.
+
+## Error Handling Tests
+
+1. ✅ Test behavior when filesystem operations fail
+   - ✅ Mock io.open to return nil when writing to a file
+   - ✅ Mock os.execute to return non-zero exit code for mkdir, ln, and rm operations
+   - ✅ Test error handling when creating directories fails
+   - ✅ Test error handling when creating symlinks fails
+   - ✅ Test error handling when removing files fails
+
+2. ✅ Test behavior with corrupted plugin files
+   - ✅ Test with empty plugin files
+   - ✅ Test with plugin files containing syntax errors
+   - ✅ Test with very large plugin files (edge case)
+
+3. ✅ Test behavior with invalid symlinks
+   - ✅ Test with symlinks pointing to non-existent targets
+   - ✅ Test with circular symlinks
+   - ✅ Test with symlinks pointing to directories instead of files
+
+## Path Handling Tests
+
+1. ✅ Test with paths containing special characters
+   - ✅ Test with spaces in paths
+   - ✅ Test with non-ASCII characters in paths
+   - ✅ Test with paths containing quotes, backslashes, and other special characters
+
+2. ✅ Test with very long paths
+   - ✅ Test with paths approaching OS limits
+   - ✅ Test with deeply nested directory structures
+
+## Command-Specific Tests
+
+### enable command
+
+1. ✅ Test enabling a plugin that exists but has invalid content
+2. ✅ Test enabling plugins when the plugins directory doesn't exist
+3. ✅ Test enabling a plugin with the same name as an existing non-symlink file
+4. ✅ Test enabling a plugin when the available-plugins directory doesn't exist
+5. ✅ Test enabling a plugin with a name containing special characters
+
+### disable command
+
+1. ✅ Test disabling plugins that are symlinks but point to non-existent targets
+2. ✅ Test disabling plugins that aren't symlinks (regular files in the plugins directory)
+3. ✅ Test disabling a plugin with a name containing special characters
+4. ✅ Test disabling a plugin that was just enabled in the same session
+
+### health_check command
+
+1. ✅ Test detection of non-symlink files in plugins directory
+2. ✅ Test detection of broken symlinks
+3. ✅ Test the --fix option for repairing non-symlink files
+4. ✅ Test the --fix option for repairing broken symlinks
+5. ✅ Test health_check after manually modifying the plugins directory
+6. ✅ Test health_check with mixed valid and invalid plugins
+
+### init command
+
+1. ✅ Test initializing when plugins directory doesn't exist
+2. ✅ Test initializing when some plugin files can't be read
+3. ✅ Test initializing when some symlinks can't be created
+4. ✅ Test initializing with plugins that have the same name but different content
+5. ✅ Test initializing with plugins that have unusual file permissions
+
+### CLI argument parsing
+
+1. ✅ Test with invalid commands
+2. ✅ Test with invalid arguments
+3. ✅ Test with missing required arguments
+4. ✅ Test with extra/unexpected arguments
+5. ✅ Test help command and version display
+6. ✅ Test with combined flags (e.g., enable --all with additional plugin names)
+
+## Integration Tests
+
+1. ✅ Test enable followed by disable for the same plugin
+2. ✅ Test init followed by health_check (Using the workflow helper to properly test broken symlink detection)
+3. ✅ Test enable --all followed by disable for specific plugins
+4. ✅ Test disable --all followed by enable for specific plugins (Implemented using workflow helper for reliable setup/teardown)
+5. ✅ Test init followed by enable for new plugins (Implemented using workflow helper to verify each step)
+6. ✅ Test the full workflow: init -> enable -> disable -> health_check (Implemented with multi-step verification)
+
+## Configuration Tests
+
+1. ✅ Test with custom config_dir
+2. ✅ Test with custom plugins_dir
+3. ✅ Test with custom available_dir
+4. ✅ Test with relative paths for configuration
+5. ✅ Test with absolute paths for configuration
+6. ✅ Test with non-standard directory structure

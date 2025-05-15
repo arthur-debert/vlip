@@ -46,3 +46,6 @@ lua_modules/
 *~
 .DS_Store
 .vscode
+
+# Local files not under version control
+.gitignoreme
