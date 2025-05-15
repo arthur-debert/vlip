@@ -1,0 +1,66 @@
+#!/bin/bash
+# gen-release - One-step release automation script for vlip
+#
+# This script automates the entire release process for vlip by:
+# 1. Running the release.sh script to update version numbers and formula
+# 2. Committing the changes
+# 3. Creating a git tag
+# 4. Pushing changes and tags to the repository
+#
+# USAGE:
+#   ./scripts/gen-release <version>
+#
+# EXAMPLE:
+#   ./scripts/gen-release 0.20.7    # Will create release v0.20.7
+#
+# WHY TWO SCRIPTS?
+# ---------------
+# - release.sh: Core script that handles the technical aspects of preparing a release
+#   (updating version in code, generating temporary rockspec, updating formula)
+#   This is used by both this script and the GitHub workflow.
+#
+# - gen-release: Higher-level convenience script for developers to create a release
+#   with a single command. Handles the git operations after release.sh completes.
+#
+# This separation allows the GitHub workflow to use just the core functionality
+# while giving developers a simple one-step process for creating releases.
+
+set -e  # Exit on any error
+
+# Check if a version was provided
+if [ $# -lt 1 ]; then
+  echo "Usage: $0 <version>"
+  echo "Example: $0 0.20.7"
+  exit 1
+fi
+
+# Add 'v' prefix if not provided
+VERSION=$1
+if [[ ! $VERSION == v* ]]; then
+  TAG_NAME="v$VERSION"
+else
+  TAG_NAME=$VERSION
+  VERSION=${TAG_NAME#v}
+fi
+
+echo "=== Starting release process for $TAG_NAME ==="
+
+# Step 1: Run the release script
+echo "Running release.sh..."
+./scripts/release.sh "$TAG_NAME"
+
+# Step 2: Commit the changes
+echo "Committing changes..."
+git add lua/vlip/cli.lua homebrew-vlip/Formula/vlip.rb
+git commit -m "Release $TAG_NAME"
+
+# Step 3: Create a tag
+echo "Creating tag $TAG_NAME..."
+git tag "$TAG_NAME"
+
+# Step 4: Push changes and tags
+echo "Pushing changes and tags..."
+git push && git push --tags
+
+echo "=== Release $TAG_NAME completed successfully ==="
+echo "A GitHub workflow will now run to create the GitHub release and update the formula."

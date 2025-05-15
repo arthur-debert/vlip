@@ -1,10 +1,41 @@
 #!/bin/bash
-set -e
+# release.sh - Core release preparation script for vlip
+#
+# This script handles the technical aspects of preparing a release:
+# 1. Updates the version number in the code
+# 2. Generates a temporary rockspec file for SHA256 calculation
+# 3. Updates the Homebrew formula with the new version and SHA256
+# 4. Cleans up old rockspec files (when run with create_release=true)
+#
+# USAGE:
+#   ./scripts/release.sh <tag> [create_release]
+#
+# PARAMETERS:
+#   <tag>           - Version tag (e.g., v0.20.7)
+#   [create_release] - Optional flag to indicate if this is being run
+#                     as part of creating a release (true/false)
+#
+# EXAMPLES:
+#   ./scripts/release.sh v0.20.7         # Prepare release locally
+#   ./scripts/release.sh v0.20.7 true    # Prepare release and clean up old rockspecs
+#
+# WHY TWO SCRIPTS?
+# ---------------
+# - release.sh (this script): Core script that handles the technical aspects
+#   of preparing a release. Used by both gen-release and GitHub workflow.
+#
+# - gen-release: Higher-level convenience script that calls this script
+#   and then handles the git operations (commit, tag, push).
+#
+# This separation allows the GitHub workflow to use just the core functionality
+# while giving developers a simple one-step process for creating releases.
+
+set -e  # Exit on any error
 
 # Check if a tag was provided
 if [ $# -lt 1 ]; then
   echo "Usage: $0 <tag> [create_release]"
-  echo "Example: $0 v0.20.1"
+  echo "Example: $0 v0.20.7"
   exit 1
 fi
 
