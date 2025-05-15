@@ -278,4 +278,128 @@ describe("VLIP error handling", function()
       assert.equals("Enabled plugin: large_plugin.lua", printer.output[1])
     end)
   end)
+  
+  describe("invalid symlinks", function()
+    it("should handle symlinks pointing to non-existent targets", function()
+      -- Setup test fixture with a broken symlink
+      local cfg = utils.setup_fixture({
+        plugins_available = {
+          { name = "plugin1", content = "-- Plugin 1 content" }
+        },
+        plugins = {
+          { name = "broken_link", is_link = true, links_to = "/non/existent/path.lua" }
+        }
+      })
+      
+      -- Capture print output
+      local printer = utils.capture_print()
+      
+      -- Run health check to detect broken symlinks
+      local result = core.health_check(false)
+      
+      -- Restore print
+      printer.restore()
+      
+      -- Verify health check detected the issue
+      assert.is_false(result)
+      
+      -- Check for warning message
+      local warning_found = false
+      for _, line in ipairs(printer.output) do
+        if line:match("Warning: broken_link.lua points to a non%-existent file") then
+          warning_found = true
+          break
+        end
+      end
+      assert.is_true(warning_found, "Expected warning about broken symlink")
+      
+      -- Test with fix option
+      printer = utils.capture_print()
+      result = core.health_check(true)
+      printer.restore()
+      
+      -- Verify the health check result after fixing
+      assert.is_true(result, "Health check should pass after fixing the issues")
+      
+      -- Verify the broken symlink was removed
+      assert.is_nil(utils.fs_mock.get_symlink(cfg.plugins_dir .. "/broken_link.lua"))
+    end)
+    
+    it("should handle circular symlinks", function()
+      -- Setup test fixture with a circular symlink (points to itself)
+      local cfg = utils.setup_fixture({})
+      
+      -- Create a circular symlink manually
+      local link_path = cfg.plugins_dir .. "/circular.lua"
+      utils.fs_mock.set_symlink(link_path, link_path)
+      
+      -- Capture print output
+      local printer = utils.capture_print()
+      
+      -- Run health check to detect circular symlinks
+      local result = core.health_check(false)
+      
+      -- Restore print
+      printer.restore()
+      
+      -- Verify health check detected the issue
+      assert.is_false(result)
+      
+      -- Test with fix option
+      printer = utils.capture_print()
+      result = core.health_check(true)
+      printer.restore()
+      
+      -- Verify the health check result after fixing
+      assert.is_true(result, "Health check should pass after fixing the issues")
+      
+      -- Verify the circular symlink was removed
+      assert.is_nil(utils.fs_mock.get_symlink(link_path))
+    end)
+    
+    it("should handle symlinks pointing to directories", function()
+      -- Setup test fixture
+      local cfg = utils.setup_fixture({})
+      
+      -- Create a directory in plugins-available
+      utils.fs_mock.set_directory(cfg.available_dir .. "/directory")
+      
+      -- Create a symlink to the directory
+      local link_path = cfg.plugins_dir .. "/dir_link.lua"
+      utils.fs_mock.set_symlink(cfg.available_dir .. "/directory", link_path)
+      
+      -- Capture print output
+      local printer = utils.capture_print()
+      
+      -- Run health check to detect directory symlinks
+      local result = core.health_check(false)
+      
+      -- Restore print
+      printer.restore()
+      
+      -- Verify health check detected the issue
+      assert.is_false(result)
+      
+      -- Check for warning message (this will be detected as a broken symlink)
+      local warning_found = false
+      for _, line in ipairs(printer.output) do
+        if line:match("Warning: dir_link.lua points to a non%-existent file") then
+          warning_found = true
+          break
+        end
+      end
+      assert.is_true(warning_found, "Expected warning about symlink to directory")
+      
+      -- Test with fix option
+      printer = utils.capture_print()
+      result = core.health_check(true)
+      printer.restore()
+      
+      -- Verify the health check result after fixing
+      assert.is_true(result, "Health check should pass after fixing the issues")
+      
+      -- Verify the directory symlink was removed
+      assert.is_nil(utils.fs_mock.get_symlink(link_path))
+    end)
+  end)
 end)
