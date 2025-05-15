@@ -1,6 +1,20 @@
 -- luacheck: globals vim
-local path = require("path")
 local M = {}
+
+-- Allow path module injection for testing
+local path
+
+-- Initialize path module
+local function init_path()
+  if not path then
+    path = require("path")
+  end
+end
+
+-- Set path module (used for testing)
+function M._set_path(p)
+  path = p
+end
 
 -- Check if running inside Neovim or as a standalone script
 local is_neovim = (_G.vim ~= nil)
@@ -23,6 +37,9 @@ local function normalize_path(path_str)
       path_str = home .. path_str:sub(2)
     end
   end
+
+  -- Initialize path module if needed
+  init_path()
 
   -- Use path.normalize to handle path normalization
   local normalized = path.normalize(path_str)
@@ -76,8 +93,8 @@ function M.configure(opts)
 end
 
 -- Utility functions
-local function file_exists(path)
-  local file = io.open(normalize_path(path), "r")
+local function file_exists(file_path)
+  local file = io.open(normalize_path(file_path), "r")
   if file then
     file:close()
     return true
@@ -90,13 +107,13 @@ local function get_plugin_name(filename)
 end
 
 -- Function to create a directory if it doesn't exist
-local function mkdir(path)
-  return os.execute("mkdir -p \"" .. normalize_path(path) .. "\"")
+local function mkdir(dir_path)
+  return os.execute("mkdir -p \"" .. normalize_path(dir_path) .. "\"")
 end
 
 -- Function to read a file
-local function read_file(path)
-  local file = io.open(normalize_path(path), "r")
+local function read_file(file_path)
+  local file = io.open(normalize_path(file_path), "r")
   if not file then return nil end
   local content = file:read("*all")
   file:close()
@@ -104,8 +121,8 @@ local function read_file(path)
 end
 
 -- Function to write to a file
-local function write_file(path, content)
-  local file = io.open(normalize_path(path), "w")
+local function write_file(file_path, content)
+  local file = io.open(normalize_path(file_path), "w")
   if not file then return false end
   file:write(content)
   file:close()
@@ -118,8 +135,8 @@ local function create_symlink(src, dst)
 end
 
 -- Function to remove a file
-local function remove_file(path)
-  return os.execute("rm \"" .. normalize_path(path) .. "\"")
+local function remove_file(file_path)
+  return os.execute("rm \"" .. normalize_path(file_path) .. "\"")
 end
 
 -- Public function to get available plugins
@@ -228,8 +245,8 @@ function M.disable(plugin_names, all)
       for file in handle:lines() do
         local plugin = file:match("([^/]+)$")
         if plugin then
-          local path = normalize_path(plugins_dir .. "/" .. plugin)
-          local rm_result = remove_file(path)
+          local plugin_path = normalize_path(plugins_dir .. "/" .. plugin)
+          local rm_result = remove_file(plugin_path)
           if rm_result == 0 then
             print("Disabled plugin: " .. plugin)
           else
@@ -251,9 +268,9 @@ function M.disable(plugin_names, all)
       plugin_file = name .. ".lua"
     end
 
-    local path = normalize_path(plugins_dir .. "/" .. plugin_file)
+    local plugin_path = normalize_path(plugins_dir .. "/" .. plugin_file)
     -- Use ls to check if the file exists
-    local handle = io.popen("ls " .. path .. " 2>/dev/null")
+    local handle = io.popen("ls " .. plugin_path .. " 2>/dev/null")
     local output = handle:read("*all")
     handle:close()
 

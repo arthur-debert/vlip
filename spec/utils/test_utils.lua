@@ -2,27 +2,25 @@
 local fs_mock = require("spec.utils.fs_mock")
 local test_utils = {}
 
--- Helper function to safely require a module
-local function safe_require(module_name)
-  -- Add all possible package paths
-  package.path = table.concat({
-    "./?.lua",
-    "./?/init.lua",
-    "./lua/?.lua",
-    "./lua/?/init.lua",
-    "./.luarocks/share/lua/5.1/?.lua",
-    "./.luarocks/share/lua/5.1/?/init.lua",
-    "/home/runner/.luarocks/share/lua/5.1/?.lua",
-    "/home/runner/.luarocks/share/lua/5.1/?/init.lua",
-    package.path
-  }, ";")
+-- Add all possible package paths
+package.path = table.concat({
+  "./?.lua",
+  "./?/init.lua",
+  "./lua/?.lua",
+  "./lua/?/init.lua",
+  "./.luarocks/share/lua/5.1/?.lua",
+  "./.luarocks/share/lua/5.1/?/init.lua",
+  "/home/runner/.luarocks/share/lua/5.1/?.lua",
+  "/home/runner/.luarocks/share/lua/5.1/?/init.lua",
+  package.path
+}, ";")
 
-  local ok, result = pcall(require, module_name)
-  if not ok then
-    error("Failed to require " .. module_name .. ": " .. tostring(result))
-  end
-  return result
-end
+-- Load required modules
+local path = require("path")
+local core = require("vlip.core")
+
+-- Set path module in core for testing
+core._set_path(path)
 
 -- Default configuration
 local default_config = {
@@ -69,12 +67,12 @@ function test_utils.setup_fixture(config)
         name = name .. ".lua"
       end
 
-      local path = cfg.available_dir .. "/" .. name
+      local plugin_path = cfg.available_dir .. "/" .. name
 
       if plugin.is_link then
-        fs_mock.set_symlink(plugin.links_to, path)
+        fs_mock.set_symlink(plugin.links_to, plugin_path)
       else
-        fs_mock.set_file(path, plugin.content or ("-- " .. name))
+        fs_mock.set_file(plugin_path, plugin.content or ("-- " .. name))
       end
     end
   end
@@ -87,18 +85,17 @@ function test_utils.setup_fixture(config)
         name = name .. ".lua"
       end
 
-      local path = cfg.plugins_dir .. "/" .. name
+      local plugin_path = cfg.plugins_dir .. "/" .. name
 
       if plugin.is_link then
-        fs_mock.set_symlink(plugin.links_to, path)
+        fs_mock.set_symlink(plugin.links_to, plugin_path)
       else
-        fs_mock.set_file(path, plugin.content or ("-- " .. name))
+        fs_mock.set_file(plugin_path, plugin.content or ("-- " .. name))
       end
     end
   end
 
   -- Configure VLIP to use our mock paths
-  local core = safe_require("vlip.core")
   core.configure(cfg)
 
   return cfg
