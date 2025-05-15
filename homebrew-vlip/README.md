@@ -8,10 +8,10 @@ The formula creates an isolated environment for Vlip and its dependencies.
 
 ```bash
 # Add this tap to your Homebrew
-brew tap adebert/vlip https://github.com/adebert/vlip.git
+brew tap arthur-debert/vlip
 
-# Install vlip
-brew install adebert/vlip/vlip
+# Install vlip (currently requires --HEAD flag)
+brew install --HEAD arthur-debert/vlip/vlip
 ```
 
 ## Usage
@@ -29,8 +29,14 @@ vlip enable plugin-name
 vlip disable plugin-name
 
 # List all available plugins
-vlip list
+vlip list-available
+
+# List all enabled plugins
+vlip list-enabled
+
+# Check for broken symlinks
+vlip health-check
 ```
 
 For more information, see the main
-[Vlip repository](https://github.com/adebert/vlip).
+[Vlip repository](https://github.com/arthur-debert/vlip).
