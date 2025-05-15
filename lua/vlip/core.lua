@@ -384,32 +384,27 @@ function M.init()
       if not write_result then
         print("  Error writing file: " .. dst)
         has_errors = true
-        goto continue
+      else
+        -- Remove the original file
+        local remove_result = remove_file(src)
+        if remove_result ~= 0 then
+          print("  Error removing original file: " .. src)
+          has_errors = true
+        else
+          -- Create a symlink from plugins to plugins-available
+          local symlink_result = create_symlink(dst, src)
+          if symlink_result ~= 0 then
+            print("  Error creating symlink: " .. src)
+            has_errors = true
+          else
+            print("  Created symlink for " .. plugin)
+          end
+        end
       end
-
-      -- Remove the original file
-      local remove_result = remove_file(src)
-      if remove_result ~= 0 then
-        print("  Error removing original file: " .. src)
-        has_errors = true
-        goto continue
-      end
-
-      -- Create a symlink from plugins to plugins-available
-      local symlink_result = create_symlink(dst, src)
-      if symlink_result ~= 0 then
-        print("  Error creating symlink: " .. src)
-        has_errors = true
-        goto continue
-      end
-
-      print("  Created symlink for " .. plugin)
     else
       print("  Error reading file: " .. src)
       has_errors = true
     end
-
-    ::continue::
   end
 
   if has_errors then
