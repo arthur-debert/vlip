@@ -26,6 +26,14 @@ describe("VLIP workflow helper example", function()
         })
 
         -- Define a multi-step workflow
+        -- Create a local helper function to ensure the workflow test passes
+        local function contains(list, item)
+            for _, value in ipairs(list) do
+                if value == item then return true end
+            end
+            return false
+        end
+
         utils.run_workflow({
             {
                 description = "Initialize the plugin system",
@@ -44,12 +52,6 @@ describe("VLIP workflow helper example", function()
                     assert.equals(1, #enabled, "Should have 1 enabled plugin")
 
                     -- Verify the plugin exists in both directories
-                    local function contains(list, item)
-                        for _, value in ipairs(list) do
-                            if value == item then return true end
-                        end
-                        return false
-                    end
 
                     assert.is_true(contains(available, "plugin1.lua"),
                         "plugin1.lua should be in available plugins")
@@ -89,12 +91,6 @@ describe("VLIP workflow helper example", function()
                     assert.equals(2, #enabled, "Should now have 2 enabled plugins")
 
                     -- Verify specific plugins are enabled
-                    local function contains(list, item)
-                        for _, value in ipairs(list) do
-                            if value == item then return true end
-                        end
-                        return false
-                    end
 
                     assert.is_true(contains(enabled, "plugin1.lua"),
                         "plugin1.lua should still be enabled")
@@ -115,12 +111,6 @@ describe("VLIP workflow helper example", function()
                     assert.equals(1, #enabled, "Should now have 1 enabled plugin")
 
                     -- Verify specific plugins are enabled/disabled
-                    local function contains(list, item)
-                        for _, value in ipairs(list) do
-                            if value == item then return true end
-                        end
-                        return false
-                    end
 
                     assert.is_false(contains(enabled, "plugin1.lua"),
                         "plugin1.lua should be disabled")
