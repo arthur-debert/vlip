@@ -23,14 +23,14 @@ This document outlines test cases that should be added to improve the test cover
 
 ## Path Handling Tests
 
-1. Test with paths containing special characters
-   - Test with spaces in paths
-   - Test with non-ASCII characters in paths
-   - Test with paths containing quotes, backslashes, and other special characters
+1. ✅ Test with paths containing special characters
+   - ✅ Test with spaces in paths
+   - ✅ Test with non-ASCII characters in paths
+   - ✅ Test with paths containing quotes, backslashes, and other special characters
 
-2. Test with very long paths
-   - Test with paths approaching or exceeding OS limits
-   - Test with deeply nested directory structures
+2. ✅ Test with very long paths
+   - ✅ Test with paths approaching OS limits
+   - ✅ Test with deeply nested directory structures
 
 ## Command-Specific Tests
 
