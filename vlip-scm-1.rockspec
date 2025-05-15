@@ -17,6 +17,11 @@ dependencies = {
    "lua >= 5.1"
    -- Add any other dependencies here
 }
+
+dev_dependencies = {
+   "busted >= 2.0.0",
+   "luassert >= 1.9.0"
+}
 build = {
    type = "builtin",
    modules = {
