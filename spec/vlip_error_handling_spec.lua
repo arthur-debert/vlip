@@ -195,4 +195,87 @@ describe("VLIP error handling", function()
       assert.is_false(result)
     end)
   end)
+  
+  describe("corrupted plugin files", function()
+    it("should handle empty plugin files", function()
+      -- Setup test fixture with an empty plugin file
+      local cfg = utils.setup_fixture({
+        plugins_available = {
+          { name = "empty_plugin", content = "" }
+        }
+      })
+      
+      -- Capture print output
+      local printer = utils.capture_print()
+      
+      -- Try to enable the empty plugin
+      local result = core.enable({"empty_plugin"}, false)
+      
+      -- Restore print
+      printer.restore()
+      
+      -- Verify the plugin was enabled (empty files are valid)
+      assert.is_true(result)
+      assert.equals(cfg.available_dir .. "/empty_plugin.lua",
+                   utils.fs_mock.get_symlink(cfg.plugins_dir .. "/empty_plugin.lua"))
+      
+      -- Verify output
+      assert.equals("Enabled plugin: empty_plugin.lua", printer.output[1])
+    end)
+    
+    it("should handle plugin files with syntax errors", function()
+      -- Setup test fixture with a plugin containing syntax errors
+      local cfg = utils.setup_fixture({
+        plugins_available = {
+          { name = "syntax_error_plugin", content = "local x = { unclosed table" }
+        }
+      })
+      
+      -- Capture print output
+      local printer = utils.capture_print()
+      
+      -- Try to enable the plugin with syntax errors
+      local result = core.enable({"syntax_error_plugin"}, false)
+      
+      -- Restore print
+      printer.restore()
+      
+      -- Verify the plugin was enabled (syntax errors are only detected at runtime)
+      assert.is_true(result)
+      assert.equals(cfg.available_dir .. "/syntax_error_plugin.lua",
+                   utils.fs_mock.get_symlink(cfg.plugins_dir .. "/syntax_error_plugin.lua"))
+      
+      -- Verify output
+      assert.equals("Enabled plugin: syntax_error_plugin.lua", printer.output[1])
+    end)
+    
+    it("should handle very large plugin files", function()
+      -- Create a large content string (100KB)
+      local large_content = string.rep("-- This is a very large plugin file\n", 5000)
+      
+      -- Setup test fixture with a large plugin file
+      local cfg = utils.setup_fixture({
+        plugins_available = {
+          { name = "large_plugin", content = large_content }
+        }
+      })
+      
+      -- Capture print output
+      local printer = utils.capture_print()
+      
+      -- Try to enable the large plugin
+      local result = core.enable({"large_plugin"}, false)
+      
+      -- Restore print
+      printer.restore()
+      
+      -- Verify the plugin was enabled
+      assert.is_true(result)
+      assert.equals(cfg.available_dir .. "/large_plugin.lua",
+                   utils.fs_mock.get_symlink(cfg.plugins_dir .. "/large_plugin.lua"))
+      
+      -- Verify output
+      assert.equals("Enabled plugin: large_plugin.lua", printer.output[1])
+    end)
+  end)
 end)
