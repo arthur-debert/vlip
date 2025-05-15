@@ -1,11 +1,11 @@
--- Tests for path handling in VLIP
--- Run with: busted spec/vlip_path_handling_spec.lua
+-- Tests for path handling functionality
+-- Run with: busted spec/core/path_handling_spec.lua
 
 -- luacheck: globals io os
 
 local utils = require("spec.utils")
 
-describe("VLIP path handling", function()
+describe("path handling", function()
   local core
 
   setup(function()

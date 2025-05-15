@@ -1,5 +1,5 @@
 -- Test file to verify enhanced fs_mock functionality
--- Run with: busted spec/test_enhanced_fs_mock_spec.lua
+-- Run with: busted spec/utils/enhanced_fs_mock_spec.lua
 
 local utils = require("spec.utils")
 local fs_mock = require("spec.utils.fs_mock")

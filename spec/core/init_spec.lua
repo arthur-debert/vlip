@@ -1,11 +1,11 @@
 -- Tests for the init command
--- Run with: busted spec/vlip_init_spec.lua
+-- Run with: busted spec/core/init_spec.lua
 
 -- luacheck: globals io os
 
 local utils = require("spec.utils")
 
-describe("vlip init command", function()
+describe("init command", function()
   local core
   local cli
   

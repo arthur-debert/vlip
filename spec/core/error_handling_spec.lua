@@ -1,11 +1,11 @@
--- Tests for error handling in VLIP
--- Run with: busted spec/vlip_error_handling_spec.lua
+-- Tests for error handling functionality
+-- Run with: busted spec/core/error_handling_spec.lua
 
 -- luacheck: globals io os
 
 local utils = require("spec.utils")
 
-describe("VLIP error handling", function()
+describe("error handling", function()
   local core
   
   setup(function()
