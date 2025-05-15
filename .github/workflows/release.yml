@@ -1,0 +1,45 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set environment variables
+        run: echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Release ${{ env.TAG_NAME }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+
+      - name: Run release script
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          chmod +x ./scripts/release.sh
+          ./scripts/release.sh ${{ env.TAG_NAME }} true
+
+      - name: Commit and push changes
+        run: |
+          VERSION=${TAG_NAME#v}
+          git add lua/vlip/cli.lua vlip-${VERSION}-1.rockspec homebrew-vlip/Formula/vlip.rb
+          git commit -m "Release ${{ env.TAG_NAME }}" || echo "No changes to commit"
+          git push
