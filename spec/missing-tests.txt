@@ -60,11 +60,11 @@ This document outlines test cases that should be added to improve the test cover
 
 ### init command
 
-1. Test initializing when plugins directory doesn't exist
-2. Test initializing when some plugin files can't be read
-3. Test initializing when some symlinks can't be created
-4. Test initializing with plugins that have the same name but different content
-5. Test initializing with plugins that have unusual file permissions
+1. ✅ Test initializing when plugins directory doesn't exist
+2. ✅ Test initializing when some plugin files can't be read
+3. ✅ Test initializing when some symlinks can't be created
+4. ✅ Test initializing with plugins that have the same name but different content
+5. ✅ Test initializing with plugins that have unusual file permissions
 
 ### CLI argument parsing
 
