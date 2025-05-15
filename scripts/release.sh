@@ -70,13 +70,17 @@ rm -f "$TMP_ROCKSPEC"
 # Clean up old rockspec files (keep only scm version)
 echo "Cleaning up old rockspec files..."
 find . -name "vlip-*.rockspec" -not -name "vlip-scm-1.rockspec" -print
+if [ "$CREATE_RELEASE" = "true" ]; then
+  echo "Removing old rockspec files..."
+  find . -name "vlip-*.rockspec" -not -name "vlip-scm-1.rockspec" -delete
+fi
 
 rm homebrew-vlip/Formula/vlip.rb.bak
-
 echo "Release preparation complete for version $VERSION"
+
 echo ""
 echo "To commit these changes:"
-echo "git add lua/vlip/cli.lua vlip-$VERSION-1.rockspec homebrew-vlip/Formula/vlip.rb"
+echo "git add lua/vlip/cli.lua homebrew-vlip/Formula/vlip.rb"
 echo "git commit -m \"Release $TAG_NAME\""
 echo "git tag $TAG_NAME"
 echo "git push && git push --tags"
