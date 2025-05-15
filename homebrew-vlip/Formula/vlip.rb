@@ -9,14 +9,6 @@ class Vlip < Formula
   head do
     url "https://github.com/arthur-debert/vlip.git", branch: "main"
   end
-    url "https://github.com/arthur-debert/vlip/archive/refs/tags/v0.20.5.tar.gz"
-  end
-    url "https://github.com/arthur-debert/vlip/archive/refs/tags/v0.20.5.tar.gz"
-  end
-    url "https://github.com/arthur-debert/vlip/archive/refs/tags/v0.20.5.tar.gz"
-  end
-    url "https://github.com/arthur-debert/vlip/archive/refs/tags/v0.20.5.tar.gz"
-  end
 
   depends_on "lua"
   depends_on "luarocks" => :build
