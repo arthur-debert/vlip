@@ -1,6 +1,9 @@
 -- Test utilities for VLIP
-local fs_mock = require("spec.utils.fs_mock")
+-- Add the project's lua directory to the package path
+package.path = "./?.lua;./?/init.lua;./lua/?.lua;./lua/?/init.lua;" .. package.path
 
+local fs_mock = require("spec.utils.fs_mock")
+local core = require("vlip.core")
 local test_utils = {}
 
 -- Default configuration
@@ -77,7 +80,6 @@ function test_utils.setup_fixture(config)
   end
 
   -- Configure VLIP to use our mock paths
-  local core = require("vlip.core")
   core.configure(cfg)
 
   return cfg
