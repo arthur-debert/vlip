@@ -77,7 +77,7 @@ This document outlines test cases that should be added to improve the test cover
 
 ## Integration Tests
 
-1. Test enable followed by disable for the same plugin
+1. ✅ Test enable followed by disable for the same plugin
 2. Test init followed by health_check
 3. Test enable --all followed by disable for specific plugins
 4. Test disable --all followed by enable for specific plugins
