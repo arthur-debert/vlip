@@ -1,5 +1,6 @@
 package = "vlip"
 version = "scm-1"
+rockspec_format = "3.0"
 source = {
    url = "git+https://github.com/arthur-debert/vlip.git",
 }
@@ -16,7 +17,13 @@ description = {
 dependencies = {
    "lua >= 5.1",
    "lua-path >= 0.3.1"
-   -- Add any other dependencies here
+}
+test_dependencies = {
+   "busted >= 2.0",
+   "luassert >= 1.8",
+}
+test = {
+   type = "busted"
 }
 build = {
    type = "builtin",

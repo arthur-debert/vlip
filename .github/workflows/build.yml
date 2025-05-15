@@ -1,0 +1,35 @@
+name: Build and Install
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Lua
+        uses: leafo/gh-actions-lua@v10
+        with:
+          luaVersion: "5.1"
+
+      - name: Setup LuaRocks
+        uses: leafo/gh-actions-luarocks@v4
+
+      - name: Install dependencies
+        run: |
+          ./scripts/install-deps.sh
+
+      - name: Build and install
+        run: |
+          ./scripts/build.sh
+
+      - name: Verify installation
+        run: |
+          $HOME/.luarocks/bin/vlip--version

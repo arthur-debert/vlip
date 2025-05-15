@@ -8,21 +8,11 @@ set -e
 echo "Installing VLIP dependencies..."
 
 # Install project dependencies from rockspec
-echo "Installing dependencies from rockspec..."
+echo "Installing runtime dependencies from rockspec..."
 luarocks install --only-deps ./vlip-scm-1.rockspec
 
-# Install development dependencies
-echo "Installing development dependencies..."
-
-# Install Busted for testing
-echo "Installing Busted testing framework..."
-luarocks install busted
-
-# Install LuaAssert for assertions
-echo "Installing LuaAssert..."
-luarocks install luassert
-
-# Install any other dependencies needed for development or testing
-# luarocks install xxx
+# Install test dependencies
+echo "Installing test dependencies..."
+luarocks test --prepare ./vlip-scm-1.rockspec
 
 echo "Dependencies installed successfully!"
