@@ -14,7 +14,11 @@ description = {
 dependencies = {
    "lua >= 5.1",
    "busted >= 2.0.0",
-   "luassert >= 1.9.0"
+   "luassert >= 1.9.0",
+   "lummander >= 0.1",
+   "chalk >= 0.1.0",
+   "f >= 0.1.0",
+   "luafilesystem >= 1.7.0"
    -- Add any other dev dependencies here
 }
 build = {

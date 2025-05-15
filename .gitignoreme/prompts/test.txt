@@ -1,0 +1,30 @@
+The current test suite is only a symbolic one. 
+
+We are going to create unit tests for the vlip too. 
+
+For each command we'll create a dedicated spec file. 
+Write the tests, and either tests or code are working move on to the next.
+
+Note that we have a utils that will mock the file system, and is tested. see spec/README.txt
+
+Tests should never alter the file ssytem or go outside the fixture. if you find
+things you need to cover that the fixture / mocks don't already offer, explain
+it and we'll decide how to handle it
+
+For each command: 
+        - Write the tests in a dedicated spec file
+          - Make sure that tests are menaningful, use the fixtue and pass
+            -  Run the full suite to be sure nothing has broken
+        When it's all done and passing, add a checkpoint and commit the work,
+        then go to the next command
+
+In oorder: 
+
+list-available
+list-available
+--version
+enable 
+enable all
+disable 
+disable --all 
+init
