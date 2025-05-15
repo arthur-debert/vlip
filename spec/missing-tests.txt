@@ -51,12 +51,12 @@ This document outlines test cases that should be added to improve the test cover
 
 ### health_check command
 
-1. Test detection of non-symlink files in plugins directory
-2. Test detection of broken symlinks
-3. Test the --fix option for repairing non-symlink files
-4. Test the --fix option for repairing broken symlinks
-5. Test health_check after manually modifying the plugins directory
-6. Test health_check with mixed valid and invalid plugins
+1. ✅ Test detection of non-symlink files in plugins directory
+2. ✅ Test detection of broken symlinks
+3. ✅ Test the --fix option for repairing non-symlink files
+4. ✅ Test the --fix option for repairing broken symlinks
+5. ✅ Test health_check after manually modifying the plugins directory
+6. ✅ Test health_check with mixed valid and invalid plugins
 
 ### init command
 
