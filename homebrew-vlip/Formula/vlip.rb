@@ -3,7 +3,7 @@ class Vlip < Formula
   homepage "https://github.com/adebert/vlip"
   
   head do
-    url "file:///Users/adebert/h/vlip", :using => :git
+    url "file:///Users/adebert/h/vlip", :using => :git, :branch => "main"
   end
   
   # For stable release (uncomment when ready)
@@ -14,7 +14,7 @@ class Vlip < Formula
   depends_on "lua"
   
   def install
-    system "luarocks", "make", "--tree=#{prefix}"
+    system "luarocks", "make", "vlip-scm-1.rockspec", "--tree=#{prefix}"
     
     # Ensure the binary is executable
     chmod 0755, "#{bin}/vlip"
