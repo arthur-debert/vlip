@@ -20,9 +20,9 @@ M.configure = core.configure
 -- Setup function for Neovim integration
 function M.setup(opts)
   opts = opts or {}
-  -- Load the Neovim UI module only when in Neovim
+  -- Load the Neovim adapter module only when in Neovim
   if _G.vim then
-    local neovim = require("vlip.ui.neovim")
+    local neovim = require("vlip.adapters.neovim")
     neovim.setup(opts)
   end
 end

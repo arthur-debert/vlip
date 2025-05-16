@@ -64,7 +64,10 @@ M.disable = plugin.disable
 M.get_available_plugins = plugin.get_available_plugins
 M.get_enabled_plugins = plugin.get_enabled_plugins
 M.list_available = plugin.list_available
-M.list_enabled = plugin.list_enabled
+-- Provide test_mode parameter for list_enabled
+function M.list_enabled(test_mode)
+    return plugin.list_enabled(test_mode)
+end
 
 -- Re-export health check functions
 M.health_check = health.check

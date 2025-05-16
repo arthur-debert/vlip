@@ -29,8 +29,15 @@ function M.normalize(path_str)
         -- This is a new path or doesn't exist yet, just ensure it's normalized
         return normalized
     else
-        -- For existing paths, get the absolute path
-        return path.abs(normalized)
+        -- Get absolute path using our own implementation since path.abs might not exist
+        if normalized:sub(1, 1) ~= "/" then
+            -- Not an absolute path, make it absolute
+            local current_dir = os.getenv("PWD") or io.popen("pwd"):read("*l")
+            return path.normalize(current_dir .. "/" .. normalized)
+        else
+            -- Already an absolute path
+            return normalized
+        end
     end
 end
 

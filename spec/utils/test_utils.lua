@@ -15,12 +15,14 @@ package.path = table.concat({
   package.path
 }, ";")
 
--- Load required modules
+-- Load mock path module for testing
 local mock_path = require("spec.utils.mock_path")
-local core = require("vlip.core")
 
--- Set mock path module in core for testing
-core._set_path(mock_path)
+-- Replace the path module with our mock
+package.loaded["vlip.utils.path"] = mock_path
+
+-- Now load core - it will use our mocked path module
+local core = require("vlip.core")
 
 -- Default configuration
 local default_config = {
@@ -120,7 +122,10 @@ end
 
 -- Teardown the test fixture
 function test_utils.teardown_fixture()
+  fs_mock.reset()
   fs_mock.teardown()
+  -- Restore original path module
+  package.loaded["vlip.utils.path"] = nil
 end
 
 -- Helper function for multi-step workflow tests

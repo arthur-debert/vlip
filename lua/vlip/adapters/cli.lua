@@ -35,7 +35,7 @@ function M.parse_args(args)
         local path_utils = require("vlip.utils.path")
 
         -- Get the config module
-        local config = require("vlip.config")
+        local config = require("vlip.core.config")
 
         print("Configuration paths:")
         print("  config_dir: " .. (config.get("config_dir") or "undefined"))
