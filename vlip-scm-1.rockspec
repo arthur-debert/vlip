@@ -29,9 +29,14 @@ build = {
    type = "builtin",
    modules = {
       ["vlip"] = "lua/vlip/init.lua",
-      ["vlip.core"] = "lua/vlip/core.lua",
+      ["vlip.core"] = "lua/vlip/core/init.lua",
+      ["vlip.core.plugin"] = "lua/vlip/core/plugin.lua",
+      ["vlip.core.health"] = "lua/vlip/core/health.lua",
       ["vlip.config"] = "lua/vlip/config.lua",
-      ["vlip.cli"] = "lua/vlip/cli.lua"
+      ["vlip.utils.fs"] = "lua/vlip/utils/fs.lua",
+      ["vlip.utils.path"] = "lua/vlip/utils/path.lua",
+      ["vlip.ui.cli"] = "lua/vlip/ui/cli.lua",
+      ["vlip.ui.neovim"] = "lua/vlip/ui/neovim.lua"
    },
    install = {
       bin = {
