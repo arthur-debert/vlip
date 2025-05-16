@@ -98,12 +98,15 @@ if is_ci then
     return original_require(module)
   end
 
-  -- Ensure LUA_PATH doesn't include LuaRocks paths in CI
+  -- NOTE: We can't use os.setenv in Lua 5.1 which is used in CI
+  -- Instead, we'll modify package.path directly if needed
   if os.getenv("LUA_PATH") then
-    local lua_path = os.getenv("LUA_PATH")
+    -- We can't modify environment variables in Lua 5.1
+    -- But we can modify the package.path which is what actually matters
+    local lua_path = package.path
     -- Filter out LuaRocks paths
     lua_path = lua_path:gsub("[^;]*luarocks[^;]*;?", "")
-    os.setenv("LUA_PATH", lua_path)
+    package.path = lua_path
   end
 end
 
