@@ -9,7 +9,7 @@ describe("vlip --version command", function()
   setup(function()
     -- Add the project's lua directory to the package path
     package.path = "./lua/?.lua;./lua/?/init.lua;" .. package.path
-    cli = require("vlip.cli")
+    cli = require("vlip.adapters.cli")
   end)
   
   after_each(function()

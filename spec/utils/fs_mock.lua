@@ -71,6 +71,9 @@ local mock_state = {
   operation_log = {}  -- Log of operations for debugging
 }
 
+-- Track which files were removed
+local removed_files = {}
+
 -- Reset the mock filesystem
 function fs_mock.reset()
   mock_state.files = {}
@@ -78,6 +81,7 @@ function fs_mock.reset()
   mock_state.symlinks = {}
   mock_state.operation_log = {}
   -- Don't reset debug_mode
+  removed_files = {}
 end
 
 -- Debug logging
@@ -320,6 +324,9 @@ function fs_mock.setup()
       remove = normalize_path(remove)
       debug_log("Removing file/symlink: " .. remove)
 
+      -- Track this removal for test assertions
+      removed_files[remove] = true
+
       local was_removed = false
       if mock_state.files[remove] then
         mock_state.files[remove] = nil
@@ -417,9 +424,9 @@ function fs_mock.dump_operations(num_ops)
     local op = mock_state.operation_log[i]
     if type(op) == "table" then
       local details = type(op.details) == "table"
-        and ("path=" .. (op.details.path or "unknown") ..
-          (op.details.target and (", target=" .. op.details.target) or ""))
-        or tostring(op.details)
+          and ("path=" .. (op.details.path or "unknown") ..
+            (op.details.target and (", target=" .. op.details.target) or ""))
+          or tostring(op.details)
 
       print(string.format("  %d. %s: %s",
         i, op.type, details))
@@ -458,9 +465,14 @@ function fs_mock.get_file(path)
   return mock_state.files[path]
 end
 
+-- Function to check if a path is a symlink
 function fs_mock.get_symlink(path)
   path = normalize_path(path)
-  return mock_state.symlinks[path]
+  if mock_state.symlinks[path] then
+    return mock_state.symlinks[path]
+  else
+    return nil
+  end
 end
 
 function fs_mock.file_exists(path)
@@ -471,6 +483,12 @@ end
 function fs_mock.directory_exists(path)
   path = normalize_path(path)
   return mock_state.directories[path] == true
+end
+
+-- Function to check if a file was removed
+function fs_mock.file_was_removed(path)
+  path = normalize_path(path)
+  return removed_files[path] == true
 end
 
 -- Expose internal state for testing

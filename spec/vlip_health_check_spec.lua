@@ -11,7 +11,7 @@ describe("vlip health_check command", function()
     -- Add the project's lua directory to the package path
     package.path = "./lua/?.lua;./lua/?/init.lua;" .. package.path
     core = require("vlip.core")
-    cli = require("vlip.cli")
+    cli = require("vlip.adapters.cli")
   end)
   
   after_each(function()

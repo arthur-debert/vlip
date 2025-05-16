@@ -8,7 +8,7 @@ describe("vlip CLI argument parsing", function()
   setup(function()
     package.path = "./lua/?.lua;./lua/?/init.lua;" .. package.path
     core = require("vlip.core")
-    cli = require("vlip.cli")
+    cli = require("vlip.adapters.cli")
   end)
   
   after_each(function()
