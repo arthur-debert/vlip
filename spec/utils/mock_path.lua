@@ -11,9 +11,9 @@
 -- actual LuaRocks modules instead of our test mocks.
 --
 -- To solve this, we:
--- 1. Detect if we're running in a CI environment
--- 2. In CI only: Override the global 'require' function to intercept calls to LuaRocks modules
--- 3. Return our mock instead of letting Lua load the actual LuaRocks modules
+-- 1. Create a specific mock for the problematic luarocks.core.manif module
+-- 2. Intercept the require call to that module
+-- 3. Return our mock instead of the actual module
 --
 -- This ensures consistent behavior between local and CI test environments.
 
@@ -60,54 +60,59 @@ function mock_path.join(...)
 end
 
 -- CI-specific fix for LuaRocks modules
-if is_ci then
-  -- Mock version of luarocks.core.manif
-  -- This is the specific module causing errors in CI
-  package.loaded["luarocks.core.manif"] = {
-    -- Add any functions from the module that might be called
-    manifest_modules = function() return {} end,
-    load_local_manifest = function() return {} end,
-    -- Add other functions as needed
-  }
+-- This is crucial to prevent the tests from failing in CI
+-- Create a fixed version of the problematic module that avoids the error
+package.loaded["luarocks.core.manif"] = {
+  -- Specifically fix the functions causing the error
+  manifest_modules = function() return {} end,
+  load_local_manifest = function() return true end,
+  -- Add any other functions that might be needed
+  get_manifest = function() return {} end,
+  make_manifest = function() return true end,
+  check_manifest = function() return true end,
+  manifest_files = function() return {} end
+}
 
-  -- Create an empty mock for any other luarocks modules that might be loaded
-  package.preload["luarocks"] = function()
-    return { core = { cfg = {}, manif = {} } }
-  end
+-- Mock for other commonly used luarocks modules
+package.loaded["luarocks.core.cfg"] = {
+  lua_version = "5.1",
+  rocks_dir = "/mock/luarocks/rocks",
+  deploy_lua_dir = "/mock/luarocks/lua",
+  deploy_bin_dir = "/mock/luarocks/bin",
+  rocks_trees = { { root = "/mock/luarocks" } }
+}
 
-  -- Store the original require function
-  local original_require = require
+package.loaded["luarocks.path"] = {
+  deploy_lua_dir = function() return "/mock/luarocks/lua" end,
+  deploy_bin_dir = function() return "/mock/luarocks/bin" end,
+  rocks_dir = function() return "/mock/luarocks/rocks" end
+}
 
-  -- Override the global require function to intercept LuaRocks module loads
-  _G.require = function(module)
-    -- Check if the requested module is a LuaRocks module
-    if module:match("^luarocks%.") then
-      -- If the module is already loaded (from our preload), return it
-      if package.loaded[module] then
-        return package.loaded[module]
-      end
+-- Store the original require function so we can restore it if needed
+local original_require = require
 
-      -- Otherwise, provide a minimal mock implementation
-      print("Mock providing empty implementation for LuaRocks module: " .. module)
-      local mock = {}
-      package.loaded[module] = mock
-      return mock
+-- Override the global require function to intercept LuaRocks module loads
+_G.require = function(module)
+  -- Check if the requested module is a LuaRocks module
+  if module:match("^luarocks%.") then
+    -- If the module is already loaded (from our preload), return it
+    if package.loaded[module] then
+      return package.loaded[module]
     end
 
-    -- For all other modules, use the original require function
-    return original_require(module)
+    -- Otherwise, create a minimal mock implementation
+    local mock = {}
+    package.loaded[module] = mock
+    return mock
   end
 
-  -- NOTE: We can't use os.setenv in Lua 5.1 which is used in CI
-  -- Instead, we'll modify package.path directly if needed
-  if os.getenv("LUA_PATH") then
-    -- We can't modify environment variables in Lua 5.1
-    -- But we can modify the package.path which is what actually matters
-    local lua_path = package.path
-    -- Filter out LuaRocks paths
-    lua_path = lua_path:gsub("[^;]*luarocks[^;]*;?", "")
-    package.path = lua_path
-  end
+  -- For all other modules, use the original require function
+  return original_require(module)
+end
+
+-- Modify package.path to ensure we don't use real LuaRocks modules in CI
+if is_ci and package.path then
+  package.path = package.path:gsub("[^;]*luarocks[^;]*;?", "")
 end
 
 return mock_path
