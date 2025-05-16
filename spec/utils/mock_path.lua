@@ -59,9 +59,22 @@ function mock_path.join(...)
   return result
 end
 
--- CI-specific fix: Prevent loading LuaRocks modules in CI environment
--- Without this, tests will fail in CI but work locally, which is confusing
+-- CI-specific fix for LuaRocks modules
 if is_ci then
+  -- Mock version of luarocks.core.manif
+  -- This is the specific module causing errors in CI
+  package.loaded["luarocks.core.manif"] = {
+    -- Add any functions from the module that might be called
+    manifest_modules = function() return {} end,
+    load_local_manifest = function() return {} end,
+    -- Add other functions as needed
+  }
+
+  -- Create an empty mock for any other luarocks modules that might be loaded
+  package.preload["luarocks"] = function()
+    return { core = { cfg = {}, manif = {} } }
+  end
+
   -- Store the original require function
   local original_require = require
 
@@ -69,12 +82,28 @@ if is_ci then
   _G.require = function(module)
     -- Check if the requested module is a LuaRocks module
     if module:match("^luarocks%.") then
-      -- Return our mock module instead of the actual LuaRocks module
-      -- This prevents errors from LuaRocks code that might expect different environments
-      return mock_path
+      -- If the module is already loaded (from our preload), return it
+      if package.loaded[module] then
+        return package.loaded[module]
+      end
+
+      -- Otherwise, provide a minimal mock implementation
+      print("Mock providing empty implementation for LuaRocks module: " .. module)
+      local mock = {}
+      package.loaded[module] = mock
+      return mock
     end
+
     -- For all other modules, use the original require function
     return original_require(module)
+  end
+
+  -- Ensure LUA_PATH doesn't include LuaRocks paths in CI
+  if os.getenv("LUA_PATH") then
+    local lua_path = os.getenv("LUA_PATH")
+    -- Filter out LuaRocks paths
+    lua_path = lua_path:gsub("[^;]*luarocks[^;]*;?", "")
+    os.setenv("LUA_PATH", lua_path)
   end
 end
 
